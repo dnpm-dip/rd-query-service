@@ -15,7 +15,10 @@ import de.dnpm.dip.service.query.{
   Query,
   UseCaseConfig
 }
-
+import play.api.libs.json.{
+  Json,
+  Format
+}
 
 
 final case class RDCriteria
@@ -39,6 +42,19 @@ final case class VariantCriteria
   gDNAChange: Option[Coding[HGVS]],
   proteinChange: Option[Coding[HGVS]],
 )
+
+object RDCriteria
+{
+  implicit val formatDiagCrit: Format[DiagnosisCriteria] =
+    Json.format[DiagnosisCriteria]
+
+  implicit val formatVarCrit: Format[VariantCriteria] =
+    Json.format[VariantCriteria]
+
+  implicit val format: Format[RDCriteria] =
+    Json.format[RDCriteria]
+}
+
 
 
 final case class RDFilters

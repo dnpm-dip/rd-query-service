@@ -6,7 +6,7 @@
 
 name := "rd-query-service"
 ThisBuild / organization := "de.dnpm.dip"
-ThisBuild / scalaVersion := "2.13.10"
+ThisBuild / scalaVersion := "2.13.12"
 ThisBuild / version      := "1.0-SNAPSHOT"
 
 
@@ -58,10 +58,11 @@ lazy val impl = project
 
 lazy val dependencies =
   new {
-    val scalatest     = "org.scalatest"  %% "scalatest"     % "3.1.1" % Test
-    val rd_model      = "de.dnpm.dip"    %% "rd-dto-model"  % "1.0-SNAPSHOT"
-    val rd_generators = "de.dnpm.dip"    %% "rd-dto-model"  % "1.0-SNAPSHOT"
-    val service_base  = "de.dnpm.dip"    %% "service-base"  % "1.0-SNAPSHOT"
+    val scalatest      = "org.scalatest"  %% "scalatest"          % "3.1.1" % Test
+    val rd_model       = "de.dnpm.dip"    %% "rd-dto-model"       % "1.0-SNAPSHOT"
+    val rd_generators  = "de.dnpm.dip"    %% "rd-dto-generators"  % "1.0-SNAPSHOT" % Test
+    val service_base   = "de.dnpm.dip"    %% "service-base"       % "1.0-SNAPSHOT"
+    val connector_base = "de.dnpm.dip"    %% "connector-base"     % "1.0-SNAPSHOT"
   }
 
 
