@@ -63,6 +63,12 @@ final case class RDFilters
 )
 extends Query.Filters
 
+object RDFilters
+{
+  implicit val format: Format[RDFilters] =
+    Json.format[RDFilters]
+}
+
 
 
 sealed trait RDConfig extends UseCaseConfig

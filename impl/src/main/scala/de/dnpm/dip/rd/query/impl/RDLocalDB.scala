@@ -1,6 +1,7 @@
 package de.dnpm.dip.rd.query.impl
 
 
+import java.io.File
 import scala.util.Either
 import scala.concurrent.Future
 import cats.Monad
@@ -10,7 +11,10 @@ import de.dnpm.dip.model.{
   Snapshot,
   Site
 }
-import de.dnpm.dip.service.query.LocalDB
+import de.dnpm.dip.service.query.{
+  LocalDB,
+  FSBackedLocalDB
+}
 import de.dnpm.dip.rd.model.RDPatientRecord
 import de.dnpm.dip.rd.query.api.RDCriteria
 import de.dnpm.dip.util.{
@@ -29,3 +33,23 @@ trait RDLocalDB extends LocalDB[
 trait RDLocalDBSPI extends SPI[RDLocalDB]
 
 object RDLocalDB extends SPILoader[RDLocalDBSPI]
+
+
+
+
+class FSBackedRDLocalDB(
+  dataDir: File
+)
+extends FSBackedLocalDB[
+  Future,
+  Monad,
+  RDCriteria,
+  RDPatientRecord
+](
+  dataDir,
+  "RDPatientRecord",
+  CriteriaOps.criteriaMatcher,
+)
+with RDLocalDB
+
+

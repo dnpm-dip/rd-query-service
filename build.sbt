@@ -32,8 +32,7 @@ lazy val api = project
     settings,
     libraryDependencies ++= Seq(
       dependencies.rd_model,
-      dependencies.service_base,
-      dependencies.scalatest
+      dependencies.service_base
     )
   )
 
@@ -43,7 +42,9 @@ lazy val impl = project
     name := "rd-query-service-impl",
     settings,
     libraryDependencies ++= Seq(
-      dependencies.scalatest
+      dependencies.scalatest,
+      dependencies.rd_generators,
+      dependencies.connector_base
     )
   )
   .dependsOn(
@@ -58,11 +59,12 @@ lazy val impl = project
 
 lazy val dependencies =
   new {
-    val scalatest      = "org.scalatest"  %% "scalatest"          % "3.1.1" % Test
+//    val scalatest      = "org.scalatest"  %% "scalatest"          % "3.1.1" % Test
+    val scalatest      = "org.scalatest"  %% "scalatest"          % "3.2.17" % Test
     val rd_model       = "de.dnpm.dip"    %% "rd-dto-model"       % "1.0-SNAPSHOT"
     val rd_generators  = "de.dnpm.dip"    %% "rd-dto-generators"  % "1.0-SNAPSHOT" % Test
     val service_base   = "de.dnpm.dip"    %% "service-base"       % "1.0-SNAPSHOT"
-    val connector_base = "de.dnpm.dip"    %% "connector-base"     % "1.0-SNAPSHOT"
+    val connector_base = "de.dnpm.dip"    %% "connector-base"     % "1.0-SNAPSHOT" % Test
   }
 
 

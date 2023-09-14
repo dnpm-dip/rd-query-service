@@ -4,13 +4,18 @@ package de.dnpm.dip.rd.query.impl
 
 import scala.concurrent.Future
 import cats.Monad
-import de.dnpm.dip.model.Snapshot
+import de.dnpm.dip.model.{
+  ClosedInterval,
+  Snapshot,
+  Patient
+}
 import de.dnpm.dip.service.query.{
   BaseQueryService,
   Connector,
   Query,
   QueryCache,
-  BaseQueryCache
+  BaseQueryCache,
+  PatientFilter
 }
 import de.dnpm.dip.rd.model.RDPatientRecord
 import de.dnpm.dip.rd.query.api._
@@ -33,11 +38,11 @@ object RDQueryServiceImpl
   lazy val cache =
     new BaseQueryCache[RDCriteria,RDFilters,RDResultSet,RDPatientRecord]
 
-
 }
 
 
-class RDQueryServiceImpl(
+class RDQueryServiceImpl
+(
   val localDB: RDLocalDB,
   val connector: Connector[Future,Monad[Future]],
   val cache: QueryCache[RDCriteria,RDFilters,RDResultSet,RDPatientRecord]
@@ -45,22 +50,32 @@ class RDQueryServiceImpl(
 extends BaseQueryService[
   Future,
   RDConfig
-]{
-
-  protected def DefaultFilters(
-    rs: Seq[Snapshot[PatientRecord]]
-  ): RDFilters = ???
-
+]
+with RDQueryService
+{
 
   override val ResultSetFrom =
     new RDResultSetImpl(_,_)
 
 
+  override def DefaultFilters(
+    rs: Seq[Snapshot[RDPatientRecord]]
+  ): RDFilters =
+    RDFilters(
+      PatientFilter.on(rs.map(_.data.patient))
+    )
+
+
   override def toPredicate(
-    flts: RDFilters
-  ): PatientRecord => Boolean = ???
+    filters: RDFilters
+  ): RDPatientRecord => Boolean =
+    patientRecord => 
+      PatientFilter.toPredicate(filters.patientFilter)
+        .apply(patientRecord.patient)
 
 
+
+  //TODO
   override val preprocess: RDPatientRecord => RDPatientRecord =
     identity
 
