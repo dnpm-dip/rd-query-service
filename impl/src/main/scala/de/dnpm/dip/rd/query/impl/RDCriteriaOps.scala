@@ -14,15 +14,17 @@ import de.dnpm.dip.rd.query.api.{
 private trait RDCriteriaOps
 {
 
-  private[impl] implicit class RDCriteriaExtensions(criteria: RDCriteria){
+  private[impl] implicit class RDCriteriaExtensions(
+    criteria: RDCriteria
+  ){
 
     def isEmpty: Boolean =
-      List(
-        criteria.diagnoses.getOrElse(List.empty).size,
-        criteria.hpoTerms.getOrElse(List.empty).size,
-        criteria.variants.getOrElse(List.empty).size
+      (
+        criteria.diagnoses.getOrElse(Set.empty) ++
+        criteria.hpoTerms.getOrElse(Set.empty) ++
+        criteria.variants.getOrElse(Set.empty)
       )
-      .sum > 0
+      .isEmpty
 
     def nonEmpty = !criteria.isEmpty
 

@@ -161,18 +161,16 @@ class Tests extends AsyncFlatSpec
 
       patientMatches = resultSet.patientMatches
 
-      _ = printJson(patientMatches)
+//      _ = printJson(patientMatches)
 
       resultNonEmpty = patientMatches must not be empty
 
     } yield forAll(
         patientMatches.map(_.matchingCriteria)
-      )( 
+      ){ 
         matches =>
-          assert(
-            query.criteria.isEmpty || (query.criteria intersect matches).nonEmpty
-          )
-      )
+          assert( (query.criteria intersect matches).nonEmpty )
+      }
 
   }
 
