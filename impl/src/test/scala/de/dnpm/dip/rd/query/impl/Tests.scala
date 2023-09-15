@@ -1,14 +1,11 @@
 package de.dnpm.dip.rd.query.impl
 
 
-
 import org.scalatest.flatspec.AsyncFlatSpec
 import org.scalatest.matchers.must.Matchers._
 import org.scalatest.OptionValues._
 import org.scalatest.EitherValues._
 import org.scalatest.Inspectors._
-
-import java.nio.file.Files.createTempDirectory
 import scala.util.Random
 import scala.concurrent.Future
 import de.dnpm.dip.coding.{
@@ -22,7 +19,7 @@ import de.dnpm.dip.service.query.{
   BaseQueryCache,
   Data,
   Query,
-  Querier
+  Querier,
 }
 import de.dnpm.dip.connector.FakeConnector
 import de.ekut.tbi.generators.Gen
@@ -38,14 +35,12 @@ class Tests extends AsyncFlatSpec
 
   implicit val rnd: Random = new Random
 
-  implicit val querier: Querier = Querier("Dummy")
+  implicit val querier: Querier = Querier("Dummy-Querier-ID")
 
   
   val service =
     new RDQueryServiceImpl(
-      new FSBackedRDLocalDB(
-        createTempDirectory("rd_query_test_data").toFile
-      ),
+      new InMemRDLocalDB,
       FakeConnector[Future],
       new BaseQueryCache[RDCriteria,RDFilters,RDResultSet,RDPatientRecord]
     )
@@ -147,7 +142,7 @@ class Tests extends AsyncFlatSpec
 
     import RDCriteriaOps._
 
-    for {   
+    for {
       result <- service ! Query.Submit(
         queryMode,
         genCriteria.next
@@ -161,7 +156,7 @@ class Tests extends AsyncFlatSpec
 
       patientMatches = resultSet.patientMatches
 
-//      _ = printJson(patientMatches)
+      _ = printJson(patientMatches)
 
       resultNonEmpty = patientMatches must not be empty
 

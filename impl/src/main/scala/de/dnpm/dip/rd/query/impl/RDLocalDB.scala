@@ -52,4 +52,3 @@ extends FSBackedLocalDB[
 )
 with RDLocalDB
 
-
