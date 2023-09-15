@@ -55,36 +55,50 @@ class Tests extends AsyncFlatSpec
     LazyList.fill(100)(Gen.of[RDPatientRecord].next)
 
 
-  // Generator for Query Criteria based on features occurring in generated dataSets
-  implicit val genCriteria: Gen[RDCriteria] =
+  // Generator for non-empty Query Criteria based on features occurring in a given dataset,
+  // and thus guaranteed to always match at least this one data set
+  val genCriteria: Gen[RDCriteria] =
     for {
-      category <-
-        Gen.oneOf(
-          dataSets
-            .map(_.diagnosis.category)
-            .distinctBy(_.code)
-        )
+      patRec <-
+        Gen.oneOf(dataSets)
+
+      category =
+        patRec.diagnosis.category
 
       diagnosisCriteria =
-        Set(
-          DiagnosisCriteria(
-            Some(category),
-            None
-          )
+        DiagnosisCriteria(
+          Some(category),
+          None
         )
 
       hpoCoding <-
         Gen.oneOf(
-          dataSets
-            .flatMap(_.hpoTerms.getOrElse(List.empty))
+          patRec
+            .hpoTerms
+            .getOrElse(List.empty)
             .map(_.value)
             .distinctBy(_.code)
         )
+
+      variant =
+        patRec
+          .ngsReport
+          .variants
+          .getOrElse(List.empty)
+          .head  // safe, generated variants always non-empty
+
+      variantCriteria =  
+        VariantCriteria(
+          Some(variant.gene),
+          variant.cDNAChange,
+          variant.gDNAChange,
+          variant.proteinChange
+        )
       
     } yield RDCriteria(
-      Some(diagnosisCriteria),
+      Some(Set(diagnosisCriteria)),
       Some(Set(hpoCoding)),
-      None
+      Some(Set(variantCriteria))
     )
 
 
@@ -106,18 +120,19 @@ class Tests extends AsyncFlatSpec
   }
 
 
+  val queryMode =
+    CodeSystem[Query.Mode]
+      .codingWithCode(Query.Mode.Local)
+      .get
+
+
   "Submitting an empty query" must "have worked" in {
 
-    val command =  
-      Query.Submit(
-        CodeSystem[Query.Mode]
-          .codingWithCode(Query.Mode.Local)
-          .get,
+    for {
+      result <- service ! Query.Submit(
+        queryMode,
         RDCriteria(None,None,None)
       )
-
-    for {
-      result <- service ! command
 
       query = result.right.value
 
@@ -128,21 +143,15 @@ class Tests extends AsyncFlatSpec
   }
 
 
-  "Submitting a non- empty query" must "have worked" in {
+  "Submitting a non-empty query" must "have worked" in {
 
     import RDCriteriaOps._
 
-
-    val command =  
-      Query.Submit(
-        CodeSystem[Query.Mode]
-          .codingWithCode(Query.Mode.Local)
-          .get,
-        Gen.of[RDCriteria].next
+    for {   
+      result <- service ! Query.Submit(
+        queryMode,
+        genCriteria.next
       )
-
-    for {
-      result <- service ! command
 
       query = result.right.value
 
@@ -153,6 +162,8 @@ class Tests extends AsyncFlatSpec
       patientMatches = resultSet.patientMatches
 
       _ = printJson(patientMatches)
+
+      resultNonEmpty = patientMatches must not be empty
 
     } yield forAll(
         patientMatches.map(_.matchingCriteria)

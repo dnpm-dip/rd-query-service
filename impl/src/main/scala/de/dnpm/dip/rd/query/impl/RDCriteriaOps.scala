@@ -121,10 +121,11 @@ private trait RDCriteriaOps
                           variant =>
            
                           gene.map(_.code == variant.gene.code).getOrElse(true) &&
-                          cDNAChange.map(c => variant.cDNAChange.exists(_.code == c.code)).getOrElse(true) &&
-                          gDNAChange.map(c => variant.gDNAChange.exists(_.code == c.code)).getOrElse(true) &&
-                          proteinChange.map(c => variant.proteinChange.exists(_.code == c.code)).getOrElse(true)
-           
+                          // DNA and Protein change checks not based on code equality,
+                          // but whether the query criterion is a substring of the occurring code 
+                          cDNAChange.map(c => variant.cDNAChange.exists(_.code.value contains c.code.value)).getOrElse(true) &&
+                          gDNAChange.map(c => variant.gDNAChange.exists(_.code.value contains c.code.value)).getOrElse(true) &&
+                          proteinChange.map(c => variant.proteinChange.exists(_.code.value contains c.code.value)).getOrElse(true)
                         }
                     }
 
