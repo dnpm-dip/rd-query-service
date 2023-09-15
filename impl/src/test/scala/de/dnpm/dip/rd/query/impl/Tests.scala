@@ -26,7 +26,7 @@ import de.dnpm.dip.service.query.{
 }
 import de.dnpm.dip.connector.FakeConnector
 import de.ekut.tbi.generators.Gen
-import play.api.libs.json.Json
+import play.api.libs.json.{Json,Writes}
 
 
 class Tests extends AsyncFlatSpec
@@ -89,6 +89,13 @@ class Tests extends AsyncFlatSpec
 
 
 
+  private def printJson[T: Writes](t: T) =
+    t.pipe(Json.toJson(_))
+     .pipe(Json.prettyPrint)
+     .tap(println)
+
+
+
 
   "Importing RDPatientRecords" must "have worked" in {
 
@@ -123,6 +130,9 @@ class Tests extends AsyncFlatSpec
 
   "Submitting a non- empty query" must "have worked" in {
 
+    import RDCriteriaOps._
+
+
     val command =  
       Query.Submit(
         CodeSystem[Query.Mode]
@@ -136,32 +146,23 @@ class Tests extends AsyncFlatSpec
 
       query = result.right.value
 
-      _ =
-        query
-          .pipe(Json.toJson(_))
-          .pipe(Json.prettyPrint)
-          .tap(println)
+      _ = printJson(query)
 
       resultSet <- service.resultSet(query.id).map(_.value)
 
       patientMatches = resultSet.patientMatches
 
-      _ =
-        patientMatches
-          .pipe(Json.toJson(_))
-          .pipe(Json.prettyPrint)
-          .tap(println)
+      _ = printJson(patientMatches)
 
-
-    } yield
-      forAll(patientMatches.map(_.matchingCriteria)){ 
-        case RDCriteria(diagnoses,hpoTerms,variant) =>
+    } yield forAll(
+        patientMatches.map(_.matchingCriteria)
+      )( 
+        matches =>
           assert(
-            diagnoses.value.nonEmpty && hpoTerms.value.nonEmpty 
+            query.criteria.isEmpty || (query.criteria intersect matches).nonEmpty
           )
-      }
+      )
 
   }
-
 
 }

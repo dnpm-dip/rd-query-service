@@ -48,7 +48,7 @@ extends FSBackedLocalDB[
 ](
   dataDir,
   "RDPatientRecord",
-  CriteriaOps.criteriaMatcher,
+  RDCriteriaOps.criteriaMatcher(strict = true),
 )
 with RDLocalDB
 
