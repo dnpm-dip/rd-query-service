@@ -116,49 +116,54 @@ class Tests extends AsyncFlatSpec
 
 
   val queryMode =
-    CodeSystem[Query.Mode]
-      .codingWithCode(Query.Mode.Local)
-      .get
+    Query.Mode.Local
+//    CodeSystem[Query.Mode]
+//      .codingWithCode(Query.Mode.Local)
+//      .get
 
 
-  "Submitting an empty query" must "have worked" in {
+  "Query ResultSet" must "contain the total number of data sets for a query without criteria" in {
 
     for {
-      result <- service ! Query.Submit(
-        queryMode,
-        RDCriteria(None,None,None)
-      )
+      result <-
+        service ! Query.Submit(
+          queryMode,
+          RDCriteria(None,None,None)
+        )
 
-      query = result.right.value
+      query =
+        result.right.value
 
-      resultSet <- service.resultSet(query.id).map(_.value)
+      resultSet <-
+        service.resultSet(query.id).map(_.value)
 
     } yield resultSet.summary.numPatients must equal (dataSets.size) 
 
   }
 
 
-  "Submitting a non-empty query" must "have worked" in {
+  it must "contain a non-empty list of correctly matching data sets for a query with criteria" in {
 
     import RDCriteriaOps._
 
     for {
-      result <- service ! Query.Submit(
-        queryMode,
-        genCriteria.next
-      )
+      result <-
+        service ! Query.Submit(
+          queryMode,
+          genCriteria.next
+        )
 
-      query = result.right.value
+      query =
+        result.right.value
 
-      _ = printJson(query)
+      resultSet <-
+        service.resultSet(query.id)
+          .map(_.value)
 
-      resultSet <- service.resultSet(query.id).map(_.value)
+      patientMatches = 
+        resultSet.patientMatches
 
-      patientMatches = resultSet.patientMatches
-
-      _ = printJson(patientMatches)
-
-      resultNonEmpty = patientMatches must not be empty
+      _ = patientMatches must not be empty
 
     } yield forAll(
         patientMatches.map(_.matchingCriteria)
