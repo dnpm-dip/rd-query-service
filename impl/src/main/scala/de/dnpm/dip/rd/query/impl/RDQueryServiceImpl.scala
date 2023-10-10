@@ -9,9 +9,13 @@ import scala.util.{
   Failure
 }
 import cats.Monad
-import de.dnpm.dip.util.Logging
+import de.dnpm.dip.util.{
+  Completer,
+  Logging
+}
 import de.dnpm.dip.model.{
   ClosedInterval,
+  Site,
   Snapshot,
   Patient
 }
@@ -24,7 +28,15 @@ import de.dnpm.dip.service.query.{
   PatientFilter,
   InMemLocalDB
 }
-import de.dnpm.dip.rd.model.RDPatientRecord
+import de.dnpm.dip.coding.{
+  Coding,
+  CodeSystem
+}
+import de.dnpm.dip.coding.hgnc.HGNC
+import de.dnpm.dip.rd.model.{
+  HPO,
+  RDPatientRecord
+}
 import de.dnpm.dip.rd.query.api._
 //import de.dnpm.dip.connector.BrokerConnector
 import de.dnpm.dip.connector.FakeConnector
@@ -122,6 +134,7 @@ extends BaseQueryService[
   RDConfig
 ]
 with RDQueryService
+with Completers
 {
 
   override val ResultSetFrom =
@@ -144,10 +157,29 @@ with RDQueryService
         .apply(patientRecord.patient)
 
 
+  override val localSite: Coding[Site] =
+    connector.localSite
+      
+    
+  override implicit val hpOntology: CodeSystem[HPO] =
+    HPO.Ontology
+      .getInstance[cats.Id]
+      .get
+      .latest
+
+
+  override implicit val hgnc: CodeSystem[HGNC] =
+    HGNC.GeneSet
+      .getInstance[cats.Id]
+      .get
+      .latest
+
+        
+  import Completer.syntax._    
 
   //TODO: Complete codings, etc
   override val preprocess: RDPatientRecord => RDPatientRecord =
-    identity
+    _.complete
 
 
 }

@@ -14,6 +14,44 @@ import de.dnpm.dip.rd.query.api.{
 private trait RDCriteriaOps
 {
 
+  private[impl] implicit class SetExtensions[T](
+    ts: Set[T]
+  ){
+
+    def intersectOn[U](
+      f: T => U
+    )(
+      tts: Set[T]
+    ): Set[T] = {
+
+      val ttfs = tts map f
+
+      ts.filter(t => ttfs contains f(t))
+    }
+  }
+
+  
+/*
+  private[impl] implicit class CollectionExtensions[T,C[X] <: Iterable[X]](
+    ts: C[T]
+  ){
+
+    import scala.collection.Factory
+
+    def intersectOn[U](
+      f: T => U
+    )(
+      tts: Iterable[T]
+    )(
+      implicit fac: Factory[T,C[T]]
+    ): C[T] =
+      ts.filter(t => tts.exists(tt => f(t) == f(tt)))
+        .to(fac)
+  
+  }
+*/
+
+
   private[impl] implicit class RDCriteriaExtensions(
     criteria: RDCriteria
   ){
@@ -95,12 +133,15 @@ private trait RDCriteriaOps
                     patientRecord.hpoTerms
                       .getOrElse(List.empty)
                       .map(_.value)
-                      .distinctBy(_.code)                   
+                      .distinctBy(_.code)
+                      .toSet
 
                   val matches =
-                    hpoCodings.toSet intersect crit
+                    hpoCodings.intersectOn(_.code)(crit)
+//                    crit.filter(hpo => hpoCodings.exists(_.code == hpo.code))
 
-                  Some(matches).filter(_.nonEmpty) -> (crit intersect matches).nonEmpty
+//                  Some(matches).filter(_.nonEmpty) -> (crit intersect matches).nonEmpty
+                  Some(matches).filter(_.nonEmpty) -> crit.intersectOn(_.code)(matches).nonEmpty
                 
                 case _ => None -> true
               }

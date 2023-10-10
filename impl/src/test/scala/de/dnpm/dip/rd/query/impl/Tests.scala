@@ -58,7 +58,9 @@ class Tests extends AsyncFlatSpec
         Gen.oneOf(dataSets)
 
       category =
-        patRec.diagnosis.category
+        patRec.diagnosis
+          .category
+          .copy(display = None)  // Undefine display value to test whether Criteria completion works
 
       diagnosisCriteria =
         DiagnosisCriteria(
@@ -116,10 +118,8 @@ class Tests extends AsyncFlatSpec
 
 
   val queryMode =
-    Query.Mode.Local
-//    CodeSystem[Query.Mode]
-//      .codingWithCode(Query.Mode.Local)
-//      .get
+    CodeSystem[Query.Mode.Value]
+      .coding(Query.Mode.Local)
 
 
   "Query ResultSet" must "contain the total number of data sets for a query without criteria" in {
@@ -162,6 +162,10 @@ class Tests extends AsyncFlatSpec
 
       patientMatches = 
         resultSet.patientMatches
+
+      _ = query.criteria.diagnoses.value.head.category.value.display must be (defined)  
+
+      _ = query.criteria.hpoTerms.value.head.display must be (defined)  
 
       _ = patientMatches must not be empty
 

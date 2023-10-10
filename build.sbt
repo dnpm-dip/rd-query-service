@@ -44,7 +44,9 @@ lazy val impl = project
     libraryDependencies ++= Seq(
       dependencies.scalatest,
       dependencies.rd_generators,
-      dependencies.connector_base
+      dependencies.connector_base,
+//      dependencies.hpo,
+      dependencies.hgnc,
     )
   )
   .dependsOn(
@@ -64,6 +66,8 @@ lazy val dependencies =
     val rd_generators  = "de.dnpm.dip"    %% "rd-dto-generators"  % "1.0-SNAPSHOT"
     val service_base   = "de.dnpm.dip"    %% "service-base"       % "1.0-SNAPSHOT"
     val connector_base = "de.dnpm.dip"    %% "connector-base"     % "1.0-SNAPSHOT"
+    val hgnc           = "de.dnpm.dip"    %% "hgnc-gene-set-impl" % "1.0-SNAPSHOT" % Test
+//    val hpo            = "de.dnpm.dip"    %% "hp-ontology"        % "1.0-SNAPSHOT" % Test
   }
 
 
