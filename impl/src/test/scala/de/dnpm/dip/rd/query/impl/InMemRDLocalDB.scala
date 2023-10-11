@@ -9,13 +9,17 @@ import de.dnpm.dip.service.query.InMemLocalDB
 
 
 
-class InMemRDLocalDB extends InMemLocalDB[
+class InMemRDLocalDB
+(
+  strict: Boolean
+)
+extends InMemLocalDB[
   Future,
   Monad,
   RDCriteria,
   RDPatientRecord
 ](
-  RDCriteriaOps.criteriaMatcher(strict = true)
+  RDCriteriaOps.criteriaMatcher(strict = strict)
 )
 with RDLocalDB
 

@@ -77,11 +77,11 @@ trait Completers
       v =>
         v.copy(
           gene              = v.gene.complete,
-          acmgClass         = v.acmgClass.map(_.complete),
-          zygosity          = v.zygosity.map(_.complete),
-          deNovo            = v.deNovo.map(_.complete),
-          modeOfInheritance = v.modeOfInheritance.map(_.complete),
-          significance      = v.significance.map(_.complete),
+          acmgClass         = v.acmgClass.complete,
+          zygosity          = v.zygosity.complete,
+          deNovo            = v.deNovo.complete,
+          modeOfInheritance = v.modeOfInheritance.complete,
+          significance      = v.significance.complete,
         )
     )
 
@@ -90,7 +90,7 @@ trait Completers
     Completer.of(
       ngs =>
         ngs.copy(
-          variants = ngs.variants.map(_.map(_.complete))
+          variants = ngs.variants.complete
         )
     )
 
@@ -101,7 +101,7 @@ trait Completers
         patRec.copy(
           patient   = patRec.patient.complete,
           diagnosis = patRec.diagnosis.complete,
-          hpoTerms  = patRec.hpoTerms.map(_.map(_.complete)),
+          hpoTerms  = patRec.hpoTerms.complete,
           ngsReport = patRec.ngsReport.complete
         )
   )
@@ -124,6 +124,9 @@ trait Completers
         )
       )
 
+    // TODO:
+    // When ensured whether HPO sub-classes should be included in a query,
+    // add them as criteria in completion process
     Completer.of(
       criteria =>
         criteria.copy(

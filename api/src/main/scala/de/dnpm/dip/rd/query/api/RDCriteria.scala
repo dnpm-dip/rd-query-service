@@ -13,7 +13,6 @@ import de.dnpm.dip.rd.model.{
 import de.dnpm.dip.service.query.{
   PatientFilter,
   Query,
-  UseCaseConfig
 }
 import play.api.libs.json.{
   Json,
@@ -68,19 +67,3 @@ object RDFilters
   implicit val format: Format[RDFilters] =
     Json.format[RDFilters]
 }
-
-
-
-sealed trait RDConfig extends UseCaseConfig
-{
-
-  type PatientRecord = RDPatientRecord
-
-  type Criteria = RDCriteria
-
-  type Filters = RDFilters
-
-  type Results = RDResultSet
-}
-
-

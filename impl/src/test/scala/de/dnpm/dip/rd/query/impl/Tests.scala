@@ -40,7 +40,7 @@ class Tests extends AsyncFlatSpec
   
   val service =
     new RDQueryServiceImpl(
-      new InMemRDLocalDB,
+      new InMemRDLocalDB(strict = false),
       FakeConnector[Future],
       new BaseQueryCache[RDCriteria,RDFilters,RDResultSet,RDPatientRecord]
     )
@@ -76,6 +76,7 @@ class Tests extends AsyncFlatSpec
             .map(_.value)
             .distinctBy(_.code)
         )
+        .map(_.copy(display = None)) // Undefine display value to test whether Criteria completion works
 
       variant =
         patRec
@@ -111,7 +112,8 @@ class Tests extends AsyncFlatSpec
   "Importing RDPatientRecords" must "have worked" in {
 
     for {
-      outcomes <- Future.traverse(dataSets)(service ! Data.Save(_))
+      outcomes <-
+        Future.traverse(dataSets)(service ! Data.Save(_))
     } yield forAll(outcomes){ _.isRight mustBe true }
     
   }
@@ -163,9 +165,9 @@ class Tests extends AsyncFlatSpec
       patientMatches = 
         resultSet.patientMatches
 
-      _ = query.criteria.diagnoses.value.head.category.value.display must be (defined)  
+      _ = all (query.criteria.diagnoses.value.map(_.category.value.display)) must be (defined)  
 
-      _ = query.criteria.hpoTerms.value.head.display must be (defined)  
+      _ = all (query.criteria.hpoTerms.value.map(_.display)) must be (defined)  
 
       _ = patientMatches must not be empty
 
