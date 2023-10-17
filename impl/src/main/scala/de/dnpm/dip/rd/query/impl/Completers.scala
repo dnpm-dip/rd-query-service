@@ -57,8 +57,8 @@ trait Completers
     Completer.of(
       diag =>
         diag.copy(
-          category = diag.category.complete, 
-          status   = diag.status.complete
+          categories = diag.categories.complete, 
+          status     = diag.status.complete
         )
     )
 
@@ -76,12 +76,12 @@ trait Completers
     Completer.of(
       v =>
         v.copy(
-          gene              = v.gene.complete,
-          acmgClass         = v.acmgClass.complete,
-          zygosity          = v.zygosity.complete,
-          deNovo            = v.deNovo.complete,
-          modeOfInheritance = v.modeOfInheritance.complete,
-          significance      = v.significance.complete,
+          gene                = v.gene.complete,
+          acmgClass           = v.acmgClass.complete,
+          zygosity            = v.zygosity.complete,
+          segregationAnalysis = v.segregationAnalysis.complete,
+          modeOfInheritance   = v.modeOfInheritance.complete,
+          significance        = v.significance.complete,
         )
     )
 
@@ -99,10 +99,10 @@ trait Completers
     Completer.of(
       patRec =>
         patRec.copy(
-          patient   = patRec.patient.complete,
-          diagnosis = patRec.diagnosis.complete,
-          hpoTerms  = patRec.hpoTerms.complete,
-          ngsReport = patRec.ngsReport.complete
+          patient    = patRec.patient.complete,
+          diagnosis  = patRec.diagnosis.complete,
+          hpoTerms   = patRec.hpoTerms.complete,
+          ngsReports = patRec.ngsReports.complete
         )
   )
 

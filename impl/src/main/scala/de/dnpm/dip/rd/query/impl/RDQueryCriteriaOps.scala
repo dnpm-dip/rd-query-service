@@ -79,7 +79,7 @@ private trait RDQueryCriteriaOps
                   val matches =
                     crit.filter {
                       case DiagnosisCriteria(category,status) =>
-                        category.map(_.code == patientRecord.diagnosis.category.code).getOrElse(true) &&
+                        category.map(coding => patientRecord.diagnosis.categories.exists(_.code == coding.code)).getOrElse(true) &&
                         status.map(_.code == patientRecord.diagnosis.status.code).getOrElse(true)
                     }
                   Some(matches).filter(_.nonEmpty) -> (crit intersect matches).nonEmpty
@@ -96,7 +96,8 @@ private trait RDQueryCriteriaOps
                   val hpoCodings =
                     patientRecord
                       .hpoTerms
-                      .getOrElse(List.empty)
+                      .toList
+//                      .getOrElse(List.empty)
                       .map(_.value)
                       .distinctBy(_.code)
                       .toSet
@@ -116,9 +117,9 @@ private trait RDQueryCriteriaOps
                 case Some(crit) if crit.nonEmpty => 
 
                   val variants =
-                    patientRecord.ngsReport
-                      .variants
-                      .getOrElse(List.empty)
+                    patientRecord
+                      .ngsReports.toList
+                      .flatMap(_.variants.getOrElse(List.empty))
            
                   val matches =
                     crit.filter {

@@ -59,7 +59,8 @@ class Tests extends AsyncFlatSpec
 
       category =
         patRec.diagnosis
-          .category
+          .categories
+          .head
           .copy(display = None)  // Undefine display value to test whether Criteria completion works
 
       diagnosisCriteria =
@@ -72,18 +73,18 @@ class Tests extends AsyncFlatSpec
         Gen.oneOf(
           patRec
             .hpoTerms
-            .getOrElse(List.empty)
             .map(_.value)
+            .toList
             .distinctBy(_.code)
         )
         .map(_.copy(display = None)) // Undefine display value to test whether Criteria completion works
 
       variant =
         patRec
-          .ngsReport
-          .variants
-          .getOrElse(List.empty)
-          .head  // safe, generated variants always non-empty
+          .ngsReports
+          .head 
+          .variants.getOrElse(List.empty)
+          .head // Safe: generated vairant lists always non-empty
 
       variantCriteria =  
         VariantCriteria(
