@@ -13,7 +13,7 @@ import de.dnpm.dip.service.query.{
 }
 import de.dnpm.dip.rd.model.RDPatientRecord
 import de.dnpm.dip.rd.query.api.{
-  RDCriteria,
+  RDQueryCriteria,
   RDResultSet,
   RDResultSummary
 }
@@ -21,10 +21,10 @@ import de.dnpm.dip.rd.query.api.{
 
 class RDResultSetImpl(
   val id: Query.Id,
-  val results: Seq[(Snapshot[RDPatientRecord],RDCriteria)]
+  val results: Seq[(Snapshot[RDPatientRecord],RDQueryCriteria)]
 )
 extends RDResultSet
-with BaseResultSet[RDPatientRecord,RDCriteria]
+with BaseResultSet[RDPatientRecord,RDQueryCriteria]
 {
 
   override lazy val summary =

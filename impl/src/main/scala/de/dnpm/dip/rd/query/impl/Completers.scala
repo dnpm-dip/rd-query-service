@@ -24,7 +24,7 @@ import de.dnpm.dip.rd.model.{
 import de.dnpm.dip.rd.query.api.{
   DiagnosisCriteria,
   VariantCriteria,
-  RDCriteria
+  RDQueryCriteria
 }
 
 
@@ -107,7 +107,7 @@ trait Completers
   )
 
 
-  implicit val criteriaCompleter: Completer[RDCriteria] = {
+  implicit val criteriaCompleter: Completer[RDQueryCriteria] = {
 
     implicit val diagCriteriaCompleter: Completer[DiagnosisCriteria] =
       Completer.of(dc =>
@@ -124,9 +124,23 @@ trait Completers
         )
       )
 
+    /*
     // TODO:
-    // When ensured whether HPO sub-classes should be included in a query,
-    // add them as criteria in completion process
+    // Uncomment when ensured whether HPO sub-classes should be included in a query  
+    implicit val hpoTermSetCompleter: Completer[Option[Set[Coding[HPO]]]] =
+      Completer.of {
+        _.map(
+          _.flatMap(
+            hpo =>
+              Set(hpo.complete) ++
+              CodeSystem[HPO]
+                .descendantsOf(hpo.code)
+                .map(_.toCoding)
+          )
+        )
+      }
+    */
+
     Completer.of(
       criteria =>
         criteria.copy(

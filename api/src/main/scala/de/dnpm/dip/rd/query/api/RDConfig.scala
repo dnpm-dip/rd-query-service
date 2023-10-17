@@ -10,7 +10,7 @@ sealed trait RDConfig extends UseCaseConfig
 
   type PatientRecord = RDPatientRecord
 
-  type Criteria = RDCriteria
+  type Criteria = RDQueryCriteria
 
   type Filters = RDFilters
 

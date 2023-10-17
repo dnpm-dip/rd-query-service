@@ -16,7 +16,7 @@ import de.dnpm.dip.service.query.{
   FSBackedLocalDB
 }
 import de.dnpm.dip.rd.model.RDPatientRecord
-import de.dnpm.dip.rd.query.api.RDCriteria
+import de.dnpm.dip.rd.query.api.RDQueryCriteria
 import de.dnpm.dip.util.{
   SPI,
   SPILoader
@@ -26,7 +26,7 @@ import de.dnpm.dip.util.{
 trait RDLocalDB extends LocalDB[
   Future,
   Monad[Future],
-  RDCriteria,
+  RDQueryCriteria,
   RDPatientRecord
 ]
 
@@ -43,12 +43,12 @@ class FSBackedRDLocalDB(
 extends FSBackedLocalDB[
   Future,
   Monad,
-  RDCriteria,
+  RDQueryCriteria,
   RDPatientRecord
 ](
   dataDir,
   "RDPatientRecord",
-  RDCriteriaOps.criteriaMatcher(strict = true),
+  RDQueryCriteriaOps.criteriaMatcher(strict = true),
 )
 with RDLocalDB
 

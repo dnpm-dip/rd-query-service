@@ -57,7 +57,7 @@ object RDQueryServiceImpl extends Logging
 {
 
   private val cache =
-    new BaseQueryCache[RDCriteria,RDFilters,RDResultSet,RDPatientRecord]
+    new BaseQueryCache[RDQueryCriteria,RDFilters,RDResultSet,RDPatientRecord]
 
   import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -75,8 +75,8 @@ object RDQueryServiceImpl extends Logging
   import scala.util.Random
 
   private val db =
-    new InMemLocalDB[Future,Monad,RDCriteria,RDPatientRecord](
-      RDCriteriaOps.criteriaMatcher(strict = true)
+    new InMemLocalDB[Future,Monad,RDQueryCriteria,RDPatientRecord](
+      RDQueryCriteriaOps.criteriaMatcher(strict = true)
     )
     with RDLocalDB
 
@@ -127,7 +127,7 @@ class RDQueryServiceImpl
 (
   val db: RDLocalDB,
   val connector: Connector[Future,Monad[Future]],
-  val cache: QueryCache[RDCriteria,RDFilters,RDResultSet,RDPatientRecord]
+  val cache: QueryCache[RDQueryCriteria,RDFilters,RDResultSet,RDPatientRecord]
 )
 extends BaseQueryService[
   Future,

@@ -20,7 +20,7 @@ import play.api.libs.json.{
 }
 
 
-final case class RDCriteria
+final case class RDQueryCriteria
 (
   diagnoses: Option[Set[DiagnosisCriteria]],
   hpoTerms: Option[Set[Coding[HPO]]],
@@ -42,7 +42,7 @@ final case class VariantCriteria
   proteinChange: Option[Coding[HGVS]],
 )
 
-object RDCriteria
+object RDQueryCriteria
 {
   implicit val formatDiagCrit: Format[DiagnosisCriteria] =
     Json.format[DiagnosisCriteria]
@@ -50,8 +50,8 @@ object RDCriteria
   implicit val formatVarCrit: Format[VariantCriteria] =
     Json.format[VariantCriteria]
 
-  implicit val format: Format[RDCriteria] =
-    Json.format[RDCriteria]
+  implicit val format: Format[RDQueryCriteria] =
+    Json.format[RDQueryCriteria]
 }
 
 

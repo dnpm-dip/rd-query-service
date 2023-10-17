@@ -42,7 +42,7 @@ class Tests extends AsyncFlatSpec
     new RDQueryServiceImpl(
       new InMemRDLocalDB(strict = false),
       FakeConnector[Future],
-      new BaseQueryCache[RDCriteria,RDFilters,RDResultSet,RDPatientRecord]
+      new BaseQueryCache[RDQueryCriteria,RDFilters,RDResultSet,RDPatientRecord]
     )
 
 
@@ -52,7 +52,7 @@ class Tests extends AsyncFlatSpec
 
   // Generator for non-empty Query Criteria based on features occurring in a given dataset,
   // and thus guaranteed to always match at least this one data set
-  val genCriteria: Gen[RDCriteria] =
+  val genCriteria: Gen[RDQueryCriteria] =
     for {
       patRec <-
         Gen.oneOf(dataSets)
@@ -93,7 +93,7 @@ class Tests extends AsyncFlatSpec
           variant.proteinChange
         )
       
-    } yield RDCriteria(
+    } yield RDQueryCriteria(
       Some(Set(diagnosisCriteria)),
       Some(Set(hpoCoding)),
       Some(Set(variantCriteria))
@@ -130,7 +130,7 @@ class Tests extends AsyncFlatSpec
       result <-
         service ! Query.Submit(
           queryMode,
-          RDCriteria(None,None,None)
+          RDQueryCriteria(None,None,None)
         )
 
       query =
@@ -146,7 +146,7 @@ class Tests extends AsyncFlatSpec
 
   it must "contain a non-empty list of correctly matching data sets for a query with criteria" in {
 
-    import RDCriteriaOps._
+    import RDQueryCriteriaOps._
 
     for {
       result <-

@@ -27,7 +27,7 @@ object RDResultSummary
 
 
 trait RDResultSet
-extends ResultSet[RDPatientRecord,RDCriteria]
+extends ResultSet[RDPatientRecord,RDQueryCriteria]
 {
   type Summary = RDResultSummary
 }

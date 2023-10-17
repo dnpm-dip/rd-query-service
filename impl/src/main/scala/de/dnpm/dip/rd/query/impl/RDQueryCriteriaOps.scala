@@ -6,17 +6,17 @@ import cats.data.Ior.{Left,Right,Both}
 import de.dnpm.dip.coding.Coding
 import de.dnpm.dip.rd.model.RDPatientRecord
 import de.dnpm.dip.rd.query.api.{
-  RDCriteria,
+  RDQueryCriteria,
   DiagnosisCriteria,
   VariantCriteria
 }
 
 
-private trait RDCriteriaOps
+private trait RDQueryCriteriaOps
 {
 
-  private[impl] implicit class RDCriteriaExtensions(
-    criteria: RDCriteria
+  private[impl] implicit class RDQueryCriteriaExtensions(
+    criteria: RDQueryCriteria
   ){
 
     def isEmpty: Boolean =
@@ -30,14 +30,14 @@ private trait RDCriteriaOps
     def nonEmpty = !criteria.isEmpty
 
 
-    def intersect(other: RDCriteria): RDCriteria =
-      RDCriteria(
+    def intersect(other: RDQueryCriteria): RDQueryCriteria =
+      RDQueryCriteria(
         criteria.diagnoses.map(_ intersect other.diagnoses.getOrElse(Set.empty)),
         criteria.hpoTerms.map(_ intersect other.hpoTerms.getOrElse(Set.empty)),
         criteria.variants.map(_ intersect other.variants.getOrElse(Set.empty)),
       )
 
-    def &(other: RDCriteria) = criteria intersect other
+    def &(other: RDQueryCriteria) = criteria intersect other
 
   }
 
@@ -58,18 +58,18 @@ private trait RDCriteriaOps
 
   def criteriaMatcher(
     strict: Boolean = true
-  ): RDCriteria => (RDPatientRecord => Option[RDCriteria]) = {
+  ): RDQueryCriteria => (RDPatientRecord => Option[RDQueryCriteria]) = {
 
     rdCriteria => 
 
       rdCriteria match {
 
         // If criteria object is empty, i.e. no query criteria are defined at all, any patient record matches
-        case RDCriteria(None,None,None) => 
+        case RDQueryCriteria(None,None,None) => 
           patientRecord => Some(rdCriteria)
 
           
-        case RDCriteria(diagnosisCriteria,hpoCriteria,variantCriteria) => 
+        case RDQueryCriteria(diagnosisCriteria,hpoCriteria,variantCriteria) => 
 
           patientRecord => 
 
@@ -143,7 +143,7 @@ private trait RDCriteriaOps
 
             if (checkMatches(diagnosisOk,hpoOk,variantsOk)(strict))
               Some(
-                RDCriteria(
+                RDQueryCriteria(
                   diagnosisMatches,
                   hpoMatches,
                   variantMatches
@@ -157,5 +157,5 @@ private trait RDCriteriaOps
 
 }
 
-private object RDCriteriaOps extends RDCriteriaOps
+private object RDQueryCriteriaOps extends RDQueryCriteriaOps
 
