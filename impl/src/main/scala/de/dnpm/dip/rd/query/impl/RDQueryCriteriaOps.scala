@@ -7,7 +7,7 @@ import de.dnpm.dip.coding.Coding
 import de.dnpm.dip.rd.model.RDPatientRecord
 import de.dnpm.dip.rd.query.api.{
   RDQueryCriteria,
-  DiagnosisCriteria,
+//  DiagnosisCriteria,
   VariantCriteria
 }
 
@@ -72,18 +72,29 @@ private trait RDQueryCriteriaOps
         case RDQueryCriteria(diagnosisCriteria,hpoCriteria,variantCriteria) => 
 
           patientRecord => 
+/*
+            val (diagnosisMatches,diagnosisOk) =
+              diagnosisCriteria match {
+                case Some(crit) if crit.nonEmpty => 
+                  val matches =
+                    crit.filter(
+                      _.categories.exists(category => patientRecord.diagnosis.categories.exists(_ == category))
+                    )
+
+                  Some(matches).filter(_.nonEmpty) -> (crit intersect matches).nonEmpty
+
+                case _ => None -> true
+              }
+*/
 
             val (diagnosisMatches,diagnosisOk) =
               diagnosisCriteria match {
                 case Some(crit) if crit.nonEmpty => 
                   val matches =
-                    crit.filter {
-                      case DiagnosisCriteria(category,status) =>
-                        category.map(coding => patientRecord.diagnosis.categories.exists(_.code == coding.code)).getOrElse(true) &&
-                        status.map(_.code == patientRecord.diagnosis.status.code).getOrElse(true)
-                    }
+                    crit intersect patientRecord.diagnosis.categories.toList.toSet
+
                   Some(matches).filter(_.nonEmpty) -> (crit intersect matches).nonEmpty
-                
+
                 case _ => None -> true
               }
 
@@ -97,7 +108,6 @@ private trait RDQueryCriteriaOps
                     patientRecord
                       .hpoTerms
                       .toList
-//                      .getOrElse(List.empty)
                       .map(_.value)
                       .distinctBy(_.code)
                       .toSet
@@ -123,17 +133,34 @@ private trait RDQueryCriteriaOps
            
                   val matches =
                     crit.filter {
-                      case VariantCriteria(gene,cDNAChange,gDNAChange,proteinChange) =>
-           
+                      case VariantCriteria(
+                        gene,
+                        cDNAChange,
+                        gDNAChange,
+                        proteinChange,
+                        acmgClass,
+                        acmgCriteria,
+                        zygosity,
+                        segregationAnalysis,
+                        modeOfInheritance,
+                        significance
+                      ) =>
+                                 
                         variants.exists {
                           variant =>
-           
-                          gene.map(_.code == variant.gene.code).getOrElse(true) &&
-                          // DNA and Protein change checks not based on code equality,
-                          // but whether the query criterion is a substring of the occurring code 
-                          cDNAChange.map(c => variant.cDNAChange.exists(_.code.value contains c.code.value)).getOrElse(true) &&
-                          gDNAChange.map(c => variant.gDNAChange.exists(_.code.value contains c.code.value)).getOrElse(true) &&
-                          proteinChange.map(c => variant.proteinChange.exists(_.code.value contains c.code.value)).getOrElse(true)
+
+                          checkMatches(
+                            gene.map(_.code == variant.gene.code).getOrElse(true),
+                            // DNA and Protein change checks not based on code equality,
+                            // but whether the query 'code' string is contained as a substring of the occurring code 
+                            cDNAChange.map(c => variant.cDNAChange.exists(_.code.value contains c.code.value)).getOrElse(true),
+                            gDNAChange.map(c => variant.gDNAChange.exists(_.code.value contains c.code.value)).getOrElse(true),
+                            proteinChange.map(c => variant.proteinChange.exists(_.code.value contains c.code.value)).getOrElse(true),
+                            acmgClass.map(_.exists(_.code == variant.acmgClass.code)).getOrElse(true),
+                            acmgCriteria.map(acmg => variant.acmgCriteria.exists(_ exists acmg.contains)).getOrElse(true),
+                          )(
+                            strict = true
+                          )
                         }
                     }
 
@@ -159,4 +186,3 @@ private trait RDQueryCriteriaOps
 }
 
 private object RDQueryCriteriaOps extends RDQueryCriteriaOps
-

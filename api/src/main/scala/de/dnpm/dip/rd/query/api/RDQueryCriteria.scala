@@ -7,6 +7,7 @@ import de.dnpm.dip.rd.model.{
   RDDiagnosis,
   HPO,
   HGVS,
+  Orphanet,
   Variant,
   RDPatientRecord
 }
@@ -22,17 +23,19 @@ import play.api.libs.json.{
 
 final case class RDQueryCriteria
 (
-  diagnoses: Option[Set[DiagnosisCriteria]],
+//  diagnoses: Option[Set[DiagnosisCriteria]],
+  diagnoses: Option[Set[Coding[Orphanet]]],
   hpoTerms: Option[Set[Coding[HPO]]],
   variants: Option[Set[VariantCriteria]]
 )
 
-
+/*
 final case class DiagnosisCriteria
 (
-  category: Option[Coding[RDDiagnosis.Category]],
-  status: Option[Coding[RDDiagnosis.Status.Value]]
+  categories: Set[Coding[Orphanet]],
+//  status: Option[Coding[RDDiagnosis.Status.Value]]
 )
+*/
 
 final case class VariantCriteria
 (
@@ -40,12 +43,18 @@ final case class VariantCriteria
   cDNAChange: Option[Coding[HGVS]],
   gDNAChange: Option[Coding[HGVS]],
   proteinChange: Option[Coding[HGVS]],
+  acmgClass: Option[Set[Coding[Variant.ACMGClass]]],
+  acmgCriteria: Option[Set[Coding[Variant.ACMGCriteria]]],
+  zygosity: Option[Set[Coding[Variant.Zygosity]]],
+  segregationAnalysis: Option[Set[Coding[Variant.SegregationAnalysis]]],
+  modeOfInheritance: Option[Set[Coding[Variant.InheritanceMode]]],
+  significance: Option[Set[Coding[Variant.Significance]]],
 )
 
 object RDQueryCriteria
 {
-  implicit val formatDiagCrit: Format[DiagnosisCriteria] =
-    Json.format[DiagnosisCriteria]
+//  implicit val formatDiagCrit: Format[DiagnosisCriteria] =
+//    Json.format[DiagnosisCriteria]
 
   implicit val formatVarCrit: Format[VariantCriteria] =
     Json.format[VariantCriteria]

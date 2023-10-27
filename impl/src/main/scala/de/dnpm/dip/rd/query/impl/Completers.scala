@@ -1,6 +1,11 @@
 package de.dnpm.dip.rd.query.impl
 
 
+import cats.{
+  Applicative,
+  Id
+}
+import cats.data.NonEmptyList
 import de.dnpm.dip.util.Completer
 import de.dnpm.dip.model.{
   Patient,
@@ -16,13 +21,14 @@ import de.dnpm.dip.coding.hgnc.HGNC
 import de.dnpm.dip.rd.model.{
   HPO,
   HPOTerm,
+  Orphanet,
   RDDiagnosis,
   RDNGSReport,
   RDPatientRecord,
   Variant
 }
 import de.dnpm.dip.rd.query.api.{
-  DiagnosisCriteria,
+//  DiagnosisCriteria,
   VariantCriteria,
   RDQueryCriteria
 }
@@ -34,6 +40,7 @@ trait Completers
 
   import Completer.syntax._
 
+      import scala.util.chaining._ 
 
   val localSite: Coding[Site]
 
@@ -41,6 +48,9 @@ trait Completers
   implicit val hpOntology: CodeSystem[HPO]
 
   implicit val hgnc: CodeSystem[HGNC]
+
+//  implicit val ordoProvider: CodeSystemProvider[Orphanet,Id,Applicative[Id]]
+  implicit val ordo: CodeSystem[Orphanet]
 
 
   implicit val patientCompleter: Completer[Patient] =
@@ -109,14 +119,28 @@ trait Completers
 
   implicit val criteriaCompleter: Completer[RDQueryCriteria] = {
 
-    implicit val diagCriteriaCompleter: Completer[DiagnosisCriteria] =
+    // Completer to include Orpha sub-classes in a query  
+    implicit val orphanetCodingSetCompleter: Completer[Set[Coding[Orphanet]]] =
+      Completer.of {
+        _.flatMap {
+          orpha =>
+            Set(orpha.complete) ++
+              ordo.descendantsOf(orpha.code)
+                .map(_.toCoding)
+        
+        }
+      }
+/*
+    implicit val diagCriteriaCompleter: Completer[DiagnosisCriteria] = {
+
       Completer.of(dc =>
         dc.copy(
-          category = dc.category.complete,
-          status   = dc.status.complete
+          categories = dc.categories.complete,
         )
       )
 
+    }
+*/
     implicit val variantCriteriaCompleter: Completer[VariantCriteria] =
       Completer.of(vc =>
         vc.copy(
@@ -124,22 +148,17 @@ trait Completers
         )
       )
 
-    /*
-    // TODO:
-    // Uncomment when ensured whether HPO sub-classes should be included in a query  
-    implicit val hpoTermSetCompleter: Completer[Option[Set[Coding[HPO]]]] =
+    // Completer to include HPO sub-classes in a query  
+    implicit val hpoTermSetCompleter: Completer[Set[Coding[HPO]]] =
       Completer.of {
-        _.map(
-          _.flatMap(
-            hpo =>
-              Set(hpo.complete) ++
-              CodeSystem[HPO]
-                .descendantsOf(hpo.code)
-                .map(_.toCoding)
-          )
+        _.flatMap(
+          hpo =>
+            Set(hpo.complete) ++
+            CodeSystem[HPO]
+              .descendantsOf(hpo.code)
+              .map(_.toCoding)
         )
       }
-    */
 
     Completer.of(
       criteria =>

@@ -63,11 +63,12 @@ class Tests extends AsyncFlatSpec
           .head
           .copy(display = None)  // Undefine display value to test whether Criteria completion works
 
+/*
       diagnosisCriteria =
         DiagnosisCriteria(
-          Some(category),
-          None
+          Set(category)
         )
+*/
 
       hpoCoding <-
         Gen.oneOf(
@@ -84,18 +85,25 @@ class Tests extends AsyncFlatSpec
           .ngsReports
           .head 
           .variants.getOrElse(List.empty)
-          .head // Safe: generated vairant lists always non-empty
+          .head // Safe: generated variant lists always non-empty
 
       variantCriteria =  
         VariantCriteria(
           Some(variant.gene),
           variant.cDNAChange,
           variant.gDNAChange,
-          variant.proteinChange
+          variant.proteinChange,
+          None,
+          None,
+          None,
+          None,
+          None,
+          None,
         )
       
     } yield RDQueryCriteria(
-      Some(Set(diagnosisCriteria)),
+      Some(Set(category)),
+//      Some(Set(diagnosisCriteria)),
       Some(Set(hpoCoding)),
       Some(Set(variantCriteria))
     )
@@ -166,9 +174,13 @@ class Tests extends AsyncFlatSpec
       patientMatches = 
         resultSet.patientMatches
 
-      _ = all (query.criteria.diagnoses.value.map(_.category.value.display)) must be (defined)  
+//      _ = all (query.criteria.diagnoses.value.flatMap(_.categories.map(_.display))) must be (defined)  
+//      _ = all (query.criteria.diagnoses.value.flatMap(_.categories.map(_.version))) must be (defined)  
+      _ = all (query.criteria.diagnoses.value.map(_.display)) must be (defined)  
+      _ = all (query.criteria.diagnoses.value.map(_.version)) must be (defined)  
 
       _ = all (query.criteria.hpoTerms.value.map(_.display)) must be (defined)  
+      _ = all (query.criteria.hpoTerms.value.map(_.version)) must be (defined)  
 
       _ = patientMatches must not be empty
 

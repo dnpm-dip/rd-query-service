@@ -35,6 +35,7 @@ import de.dnpm.dip.coding.{
 import de.dnpm.dip.coding.hgnc.HGNC
 import de.dnpm.dip.rd.model.{
   HPO,
+  Orphanet,
   RDPatientRecord
 }
 import de.dnpm.dip.rd.query.api._
@@ -64,7 +65,7 @@ object RDQueryServiceImpl extends Logging
   private val connector =
     FakeConnector[Future]
 //    BrokerConnector(
-//      "/api/peer2peer/rd",
+//      "/api/rd/peer2peer/",
 //      PartialFunction.empty
 //    )
 
@@ -163,6 +164,12 @@ with Completers
     
   override implicit val hpOntology: CodeSystem[HPO] =
     HPO.Ontology
+      .getInstance[cats.Id]
+      .get
+      .latest
+
+  override implicit val ordo: CodeSystem[Orphanet] =
+    Orphanet.Ordo
       .getInstance[cats.Id]
       .get
       .latest
