@@ -17,7 +17,7 @@ import de.dnpm.dip.service.query.{
 }
 import play.api.libs.json.{
   Json,
-  Format
+  OFormat
 }
 
 
@@ -56,10 +56,10 @@ object RDQueryCriteria
 //  implicit val formatDiagCrit: Format[DiagnosisCriteria] =
 //    Json.format[DiagnosisCriteria]
 
-  implicit val formatVarCrit: Format[VariantCriteria] =
+  implicit val formatVarCrit: OFormat[VariantCriteria] =
     Json.format[VariantCriteria]
 
-  implicit val format: Format[RDQueryCriteria] =
+  implicit val format: OFormat[RDQueryCriteria] =
     Json.format[RDQueryCriteria]
 }
 
@@ -73,6 +73,6 @@ extends Query.Filters
 
 object RDFilters
 {
-  implicit val format: Format[RDFilters] =
+  implicit val format: OFormat[RDFilters] =
     Json.format[RDFilters]
 }

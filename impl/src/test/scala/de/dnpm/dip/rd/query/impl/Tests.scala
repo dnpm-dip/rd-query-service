@@ -63,13 +63,6 @@ class Tests extends AsyncFlatSpec
           .head
           .copy(display = None)  // Undefine display value to test whether Criteria completion works
 
-/*
-      diagnosisCriteria =
-        DiagnosisCriteria(
-          Set(category)
-        )
-*/
-
       hpoCoding <-
         Gen.oneOf(
           patRec
@@ -103,7 +96,6 @@ class Tests extends AsyncFlatSpec
       
     } yield RDQueryCriteria(
       Some(Set(category)),
-//      Some(Set(diagnosisCriteria)),
       Some(Set(hpoCoding)),
       Some(Set(variantCriteria))
     )
@@ -174,8 +166,6 @@ class Tests extends AsyncFlatSpec
       patientMatches = 
         resultSet.patientMatches
 
-//      _ = all (query.criteria.diagnoses.value.flatMap(_.categories.map(_.display))) must be (defined)  
-//      _ = all (query.criteria.diagnoses.value.flatMap(_.categories.map(_.version))) must be (defined)  
       _ = all (query.criteria.diagnoses.value.map(_.display)) must be (defined)  
       _ = all (query.criteria.diagnoses.value.map(_.version)) must be (defined)  
 

@@ -9,7 +9,7 @@ import de.dnpm.dip.service.query.{
 import de.dnpm.dip.rd.model.RDPatientRecord
 import play.api.libs.json.{
   Json,
-  Writes
+  OWrites
 }
 
 final case class RDResultSummary
@@ -21,7 +21,7 @@ extends ResultSet.Summary
 
 object RDResultSummary
 {
-  implicit val writes: Writes[RDResultSummary] =
+  implicit val writes: OWrites[RDResultSummary] =
     Json.writes[RDResultSummary]
 }
 

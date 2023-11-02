@@ -22,6 +22,7 @@ import de.dnpm.dip.model.{
 import de.dnpm.dip.service.query.{
   BaseQueryService,
   Connector,
+  Data,
   Query,
   QueryCache,
   BaseQueryCache,
@@ -81,19 +82,6 @@ object RDQueryServiceImpl extends Logging
     )
     with RDLocalDB
 
-  Try(
-    Option(System.getProperty("dnpm.dip.rd.query.data.generate")).get
-  )
-  .map(_.toInt)
-  .foreach {
-    n =>
-      implicit val rnd: Random = new Random
-      for (i <- 0 to n){
-        db save Gen.of[RDPatientRecord].next
-      }
-  }
-    
-
 /*
   private val sysProp =
     "dnpm.dip.rd.query.datadir"
@@ -121,6 +109,18 @@ object RDQueryServiceImpl extends Logging
       cache
     )
 
+  Try(
+    Option(System.getProperty("dnpm.dip.rd.query.data.generate")).get
+  )
+  .map(_.toInt)
+  .foreach {
+    n =>
+      implicit val rnd: Random = new Random
+      for (i <- 0 to n){
+        instance ! Data.Save(Gen.of[RDPatientRecord].next)
+      }
+  }
+    
 }
 
 
