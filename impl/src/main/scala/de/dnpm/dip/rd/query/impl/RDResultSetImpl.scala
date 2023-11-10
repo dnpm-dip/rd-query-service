@@ -7,9 +7,12 @@ import de.dnpm.dip.model.{
   Snapshot
 }
 import de.dnpm.dip.service.query.{
+  PatientFilter,
   PatientMatch,
   Query,
-  BaseResultSet
+  BaseResultSet,
+  ReportingOps,
+  Distribution
 }
 import de.dnpm.dip.rd.model.RDPatientRecord
 import de.dnpm.dip.rd.query.api.{
@@ -27,10 +30,36 @@ extends RDResultSet
 with BaseResultSet[RDPatientRecord,RDQueryCriteria]
 {
 
-  override lazy val summary =
+  override def summary = {
+
+    val patRecs =
+      results.collect {
+        case (Snapshot(patRec,_),_) => patRec
+      }
+
+    val patients =
+      patRecs.map(_.patient)
+
     RDResultSummary(
       id,
-      results.size
+      patRecs.size,
+      PatientFilter.on(patients),
+      ReportingOps.FrequencyDistribution(
+        patients.map(_.managingSite.get)  // .get safe here, because managingSite always set upon data import
+      ),
+      ReportingOps.FrequencyDistribution(
+        patRecs.flatMap(
+          _.diagnosis.categories.toList
+        )
+      ),
+      ReportingOps.FrequencyDistribution(
+        patRecs.flatMap(
+          _.hpoTerms.map(_.value).toList
+        )
+      )
     )
+
+  }
+
 
 }

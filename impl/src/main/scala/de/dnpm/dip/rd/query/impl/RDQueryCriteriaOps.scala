@@ -72,20 +72,6 @@ private trait RDQueryCriteriaOps
         case RDQueryCriteria(diagnosisCriteria,hpoCriteria,variantCriteria) => 
 
           patientRecord => 
-/*
-            val (diagnosisMatches,diagnosisOk) =
-              diagnosisCriteria match {
-                case Some(crit) if crit.nonEmpty => 
-                  val matches =
-                    crit.filter(
-                      _.categories.exists(category => patientRecord.diagnosis.categories.exists(_ == category))
-                    )
-
-                  Some(matches).filter(_.nonEmpty) -> (crit intersect matches).nonEmpty
-
-                case _ => None -> true
-              }
-*/
 
             val (diagnosisMatches,diagnosisOk) =
               diagnosisCriteria match {

@@ -28,7 +28,6 @@ import de.dnpm.dip.rd.model.{
   Variant
 }
 import de.dnpm.dip.rd.query.api.{
-//  DiagnosisCriteria,
   VariantCriteria,
   RDQueryCriteria
 }
@@ -49,7 +48,6 @@ trait Completers
 
   implicit val hgnc: CodeSystem[HGNC]
 
-//  implicit val ordoProvider: CodeSystemProvider[Orphanet,Id,Applicative[Id]]
   implicit val ordo: CodeSystem[Orphanet]
 
 
@@ -88,6 +86,7 @@ trait Completers
         v.copy(
           gene                = v.gene.complete,
           acmgClass           = v.acmgClass.complete,
+          acmgCriteria        = v.acmgCriteria.complete,
           zygosity            = v.zygosity.complete,
           segregationAnalysis = v.segregationAnalysis.complete,
           modeOfInheritance   = v.modeOfInheritance.complete,

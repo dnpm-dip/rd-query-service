@@ -116,7 +116,7 @@ object RDQueryServiceImpl extends Logging
   .foreach {
     n =>
       implicit val rnd: Random = new Random
-      for (i <- 0 to n){
+      for (i <- 0 until n){
         instance ! Data.Save(Gen.of[RDPatientRecord].next)
       }
   }
@@ -149,13 +149,14 @@ with Completers
       PatientFilter.on(rs.map(_.data.patient))
     )
 
-
+/*
   override def toPredicate(
     filters: RDFilters
   ): RDPatientRecord => Boolean =
     patientRecord => 
       PatientFilter.toPredicate(filters.patientFilter)
         .apply(patientRecord.patient)
+*/
 
 
   override val localSite: Coding[Site] =

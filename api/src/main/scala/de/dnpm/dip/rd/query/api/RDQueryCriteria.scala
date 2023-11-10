@@ -17,9 +17,28 @@ import de.dnpm.dip.service.query.{
 }
 import play.api.libs.json.{
   Json,
+  Format,
   OFormat
 }
 
+
+object Operator extends Enumeration
+{
+  val AND, OR = Value
+
+  implicit val format: Format[Value] =
+    Json.formatEnum(this)
+}
+
+/*
+final case class RDQueryCriteria
+(
+//  diagnoses: Option[Set[DiagnosisCriteria]],
+  diagnoses: Option[Set[Coding[Orphanet]]],
+  hpoTerms: Option[Set[Coding[HPO]]],
+  variants: Option[Set[VariantCriteria]]
+)
+*/
 
 final case class RDQueryCriteria
 (
