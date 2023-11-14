@@ -27,7 +27,9 @@ import de.dnpm.dip.service.query.{
   QueryCache,
   BaseQueryCache,
   PatientFilter,
-  InMemLocalDB
+  InMemLocalDB,
+  PreparedQueryDB,
+  InMemPreparedQueryDB,
 }
 import de.dnpm.dip.coding.{
   Coding,
@@ -104,6 +106,7 @@ object RDQueryServiceImpl extends Logging
 
   private[impl] lazy val instance =
     new RDQueryServiceImpl(
+      new InMemPreparedQueryDB[Future,Monad,RDQueryCriteria],
       db,
       connector,
       cache
@@ -126,6 +129,7 @@ object RDQueryServiceImpl extends Logging
 
 class RDQueryServiceImpl
 (
+  val preparedQueryDB: PreparedQueryDB[Future,Monad[Future],RDQueryCriteria,String],
   val db: RDLocalDB,
   val connector: Connector[Future,Monad[Future]],
   val cache: QueryCache[RDQueryCriteria,RDFilters,RDResultSet,RDPatientRecord]
@@ -148,15 +152,6 @@ with Completers
     RDFilters(
       PatientFilter.on(rs.map(_.data.patient))
     )
-
-/*
-  override def toPredicate(
-    filters: RDFilters
-  ): RDPatientRecord => Boolean =
-    patientRecord => 
-      PatientFilter.toPredicate(filters.patientFilter)
-        .apply(patientRecord.patient)
-*/
 
 
   override val localSite: Coding[Site] =

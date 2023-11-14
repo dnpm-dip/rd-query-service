@@ -8,6 +8,7 @@ import org.scalatest.EitherValues._
 import org.scalatest.Inspectors._
 import scala.util.Random
 import scala.concurrent.Future
+import cats.Monad
 import de.dnpm.dip.coding.{
   Code,
   CodeSystem,
@@ -20,6 +21,9 @@ import de.dnpm.dip.service.query.{
   Data,
   Query,
   Querier,
+  PreparedQuery,
+  PreparedQueryDB,
+  InMemPreparedQueryDB
 }
 import de.dnpm.dip.connector.FakeConnector
 import de.ekut.tbi.generators.Gen
@@ -33,13 +37,16 @@ class Tests extends AsyncFlatSpec
   import de.dnpm.dip.rd.gens.Generators._
 
 
-  implicit val rnd: Random = new Random
+  implicit val rnd: Random =
+    new Random
 
-  implicit val querier: Querier = Querier("Dummy-Querier-ID")
+  implicit val querier: Querier =
+    Querier("Dummy-Querier-ID")
 
   
   val service =
     new RDQueryServiceImpl(
+      new InMemPreparedQueryDB[Future,Monad,RDQueryCriteria],
       new InMemRDLocalDB(strict = false),
       FakeConnector[Future],
       new BaseQueryCache[RDQueryCriteria,RDFilters,RDResultSet,RDPatientRecord]
@@ -182,5 +189,32 @@ class Tests extends AsyncFlatSpec
       }
 
   }
+
+
+  "PreparedQuery" must "have been successfully created" in {
+
+    for {
+      result <-
+        service ! PreparedQuery.Create("Dummy Prepared Query",genCriteria.next)
+
+    } yield result.isRight mustBe true 
+
+  }
+
+  it must "have been successfully retrieved" in {
+
+    for {
+      result <-
+        service ? PreparedQuery.Query(Some(querier))
+
+      _ = result must not be empty 
+
+      query <- 
+        service ? result.head.id
+
+    } yield query must be (defined)
+
+  }
+
 
 }

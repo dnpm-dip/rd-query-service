@@ -39,7 +39,9 @@ trait Completers
 
   import Completer.syntax._
 
-      import scala.util.chaining._ 
+  import scala.util.chaining._ 
+
+
 
   val localSite: Coding[Site]
 
@@ -116,7 +118,29 @@ trait Completers
   )
 
 
+  implicit val variantCriteriaCompleter: Completer[VariantCriteria] =
+    Completer.of(vc =>
+      vc.copy(
+        gene = vc.gene.complete
+      )
+    )
+
+
   implicit val criteriaCompleter: Completer[RDQueryCriteria] = {
+
+    Completer.of(
+      criteria =>
+        criteria.copy(
+          diagnoses = criteria.diagnoses.complete,
+          hpoTerms  = criteria.hpoTerms.complete,
+          variants  = criteria.variants.complete
+        )
+    )
+
+  }
+
+  
+  val CriteriaExpander: Completer[RDQueryCriteria] = {
 
     // Completer to include Orpha sub-classes in a query  
     implicit val orphanetCodingSetCompleter: Completer[Set[Coding[Orphanet]]] =
@@ -129,23 +153,6 @@ trait Completers
         
         }
       }
-/*
-    implicit val diagCriteriaCompleter: Completer[DiagnosisCriteria] = {
-
-      Completer.of(dc =>
-        dc.copy(
-          categories = dc.categories.complete,
-        )
-      )
-
-    }
-*/
-    implicit val variantCriteriaCompleter: Completer[VariantCriteria] =
-      Completer.of(vc =>
-        vc.copy(
-          gene = vc.gene.complete
-        )
-      )
 
     // Completer to include HPO sub-classes in a query  
     implicit val hpoTermSetCompleter: Completer[Set[Coding[HPO]]] =
@@ -171,4 +178,3 @@ trait Completers
   }
 
 }
-
