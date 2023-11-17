@@ -22,6 +22,7 @@ import de.dnpm.dip.model.{
 import de.dnpm.dip.service.query.{
   BaseQueryService,
   Connector,
+  Filters,
   Data,
   Query,
   QueryCache,
@@ -42,8 +43,7 @@ import de.dnpm.dip.rd.model.{
   RDPatientRecord
 }
 import de.dnpm.dip.rd.query.api._
-//import de.dnpm.dip.connector.BrokerConnector
-import de.dnpm.dip.connector.FakeConnector
+import de.dnpm.dip.connector.peer2peer.PeerToPeerConnector
 
 
 
@@ -63,45 +63,19 @@ object RDQueryServiceImpl extends Logging
   private val cache =
     new BaseQueryCache[RDQueryCriteria,RDFilters,RDResultSet,RDPatientRecord]
 
-  import scala.concurrent.ExecutionContext.Implicits.global
 
   private val connector =
-    FakeConnector[Future]
-//    BrokerConnector(
-//      "/api/rd/peer2peer/",
-//      PartialFunction.empty
-//    )
+    PeerToPeerConnector(
+      "/api/rd/peer2peer/",
+      PartialFunction.empty
+    )
 
-
-  import de.ekut.tbi.generators.Gen
-  import de.dnpm.dip.rd.gens.Generators._
-  import scala.util.chaining._
-  import scala.util.Random
 
   private val db =
     new InMemLocalDB[Future,Monad,RDQueryCriteria,RDPatientRecord](
       RDQueryCriteriaOps.criteriaMatcher(strict = true)
     )
     with RDLocalDB
-
-/*
-  private val sysProp =
-    "dnpm.dip.rd.query.datadir"
-
-  private val db =
-    new FSBackedRDLocalDB(
-      Try {
-        Option(System.getProperty(sysProp)).get
-      }
-      .recoverWith {
-        case t =>
-          log.error(s"Please define system property '$sysProp' for RD query data persistence directory")
-          Failure(t)
-      }
-      .map(new File(_))
-      .get
-    )
-*/
 
 
   private[impl] lazy val instance =
@@ -118,7 +92,16 @@ object RDQueryServiceImpl extends Logging
   .map(_.toInt)
   .foreach {
     n =>
-      implicit val rnd: Random = new Random
+
+      import de.ekut.tbi.generators.Gen
+      import de.dnpm.dip.rd.gens.Generators._
+      import scala.util.chaining._
+      import scala.util.Random
+      import scala.concurrent.ExecutionContext.Implicits.global
+
+      implicit val rnd: Random =
+        new Random
+
       for (i <- 0 until n){
         instance ! Data.Save(Gen.of[RDPatientRecord].next)
       }
@@ -146,12 +129,38 @@ with Completers
     new RDResultSetImpl(_,_)
 
 
+  override def DefaultFilter(
+    results: Seq[Snapshot[RDPatientRecord]]
+  ): RDFilters = {
+
+    val records =
+      results.map(_.data)
+
+    RDFilters(
+      PatientFilter.on(records),
+      HPOFilter(
+        Option(
+          records.flatMap(_.hpoTerms.map(_.value).toList)
+            .toSet
+        )
+      ),
+      DiagnosisFilter(
+        Option(
+          records.flatMap(_.diagnosis.categories.toList)
+            .toSet
+        )
+      )
+    )
+  }
+
+/*
   override def DefaultFilters(
     rs: Seq[Snapshot[RDPatientRecord]]
   ): RDFilters =
     RDFilters(
       PatientFilter.on(rs.map(_.data.patient))
     )
+*/
 
 
   override val localSite: Coding[Site] =

@@ -43,7 +43,7 @@ with BaseResultSet[RDPatientRecord,RDQueryCriteria]
     RDResultSummary(
       id,
       patRecs.size,
-      PatientFilter.on(patients),
+//      PatientFilter.on(patients),
       ReportingOps.FrequencyDistribution(
         patients.map(_.managingSite.get)  // .get safe here, because managingSite always set upon data import
       ),

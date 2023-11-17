@@ -25,7 +25,7 @@ import de.dnpm.dip.service.query.{
   PreparedQueryDB,
   InMemPreparedQueryDB
 }
-import de.dnpm.dip.connector.FakeConnector
+import de.dnpm.dip.connector.fake.FakeConnector
 import de.ekut.tbi.generators.Gen
 import play.api.libs.json.{Json,Writes}
 
@@ -171,7 +171,7 @@ class Tests extends AsyncFlatSpec
           .map(_.value)
 
       patientMatches = 
-        resultSet.patientMatches
+        resultSet.patientMatches()
 
       _ = all (query.criteria.diagnoses.value.map(_.display)) must be (defined)  
       _ = all (query.criteria.diagnoses.value.map(_.version)) must be (defined)  

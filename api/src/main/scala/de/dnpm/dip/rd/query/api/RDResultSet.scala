@@ -25,7 +25,7 @@ final case class RDResultSummary
 (
   id: Query.Id,
   numPatients: Int,
-  patientFilter: PatientFilter,
+//  patientFilter: PatientFilter,
   siteDistribution: Seq[ConceptCount[Coding[Site]]],
   diagnosisCategoryDistribution: Seq[ConceptCount[Coding[Orphanet]]],
   hpoTermDistribution: Seq[ConceptCount[Coding[HPO]]]
