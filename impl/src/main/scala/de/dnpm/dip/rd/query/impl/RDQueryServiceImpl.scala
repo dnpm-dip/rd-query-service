@@ -153,15 +153,6 @@ with Completers
     )
   }
 
-/*
-  override def DefaultFilters(
-    rs: Seq[Snapshot[RDPatientRecord]]
-  ): RDFilters =
-    RDFilters(
-      PatientFilter.on(rs.map(_.data.patient))
-    )
-*/
-
 
   override val localSite: Coding[Site] =
     connector.localSite

@@ -11,6 +11,7 @@ import de.dnpm.dip.service.query.{
   ConceptCount
 }
 import de.dnpm.dip.rd.model.{
+  HGVS,
   HPO,
   Orphanet,
   RDPatientRecord
@@ -25,15 +26,22 @@ final case class RDResultSummary
 (
   id: Query.Id,
   numPatients: Int,
-//  patientFilter: PatientFilter,
   siteDistribution: Seq[ConceptCount[Coding[Site]]],
   diagnosisCategoryDistribution: Seq[ConceptCount[Coding[Orphanet]]],
-  hpoTermDistribution: Seq[ConceptCount[Coding[HPO]]]
+  hpoTermDistribution: Seq[ConceptCount[Coding[HPO]]],
+  variantHpoTermAssociation: RDResultSummary.VariantAssociation[HPO],
+  variantDiseaseCategoryAssociation: RDResultSummary.VariantAssociation[Orphanet]
 ) 
 extends ResultSet.Summary
 
+
 object RDResultSummary
 {
+
+  type VariantAssociation[T] =
+    Seq[(Coding[HGVS],Seq[ConceptCount[Coding[T]]])]
+
+
   implicit val writes: OWrites[RDResultSummary] =
     Json.writes[RDResultSummary]
 }

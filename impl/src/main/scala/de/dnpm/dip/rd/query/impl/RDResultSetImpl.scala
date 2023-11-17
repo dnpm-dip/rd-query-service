@@ -11,7 +11,7 @@ import de.dnpm.dip.service.query.{
   PatientMatch,
   Query,
   BaseResultSet,
-  ReportingOps,
+//  ReportingOps,
   Distribution
 }
 import de.dnpm.dip.rd.model.RDPatientRecord
@@ -30,6 +30,9 @@ extends RDResultSet
 with BaseResultSet[RDPatientRecord,RDQueryCriteria]
 {
 
+  import RDReportingOps._
+
+
   override def summary = {
 
     val patRecs =
@@ -43,20 +46,21 @@ with BaseResultSet[RDPatientRecord,RDQueryCriteria]
     RDResultSummary(
       id,
       patRecs.size,
-//      PatientFilter.on(patients),
-      ReportingOps.FrequencyDistribution(
-        patients.map(_.managingSite.get)  // .get safe here, because managingSite always set upon data import
+      FrequencyDistribution(
+        patients.flatMap(_.managingSite)
       ),
-      ReportingOps.FrequencyDistribution(
+      FrequencyDistribution(
         patRecs.flatMap(
           _.diagnosis.categories.toList
         )
       ),
-      ReportingOps.FrequencyDistribution(
+      FrequencyDistribution(
         patRecs.flatMap(
           _.hpoTerms.map(_.value).toList
         )
-      )
+      ),
+      VariantHPOAssociation(patRecs),
+      VariantDiseaseCategoryAssociation(patRecs)
     )
 
   }
