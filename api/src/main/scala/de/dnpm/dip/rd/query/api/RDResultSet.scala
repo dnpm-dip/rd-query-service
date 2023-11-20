@@ -3,12 +3,17 @@ package de.dnpm.dip.rd.query.api
 
 
 import de.dnpm.dip.coding.Coding
-import de.dnpm.dip.model.Site
+import de.dnpm.dip.model.{
+  Gender,
+  Interval,
+  Site,
+}
 import de.dnpm.dip.service.query.{
   PatientFilter,
   Query,
   ResultSet,
-  ConceptCount
+  ConceptCount,
+  Entry
 }
 import de.dnpm.dip.rd.model.{
   HGVS,
@@ -26,11 +31,13 @@ final case class RDResultSummary
 (
   id: Query.Id,
   numPatients: Int,
+  genderDistribution: Seq[ConceptCount[Coding[Gender.Value]]],
+  ageDistribution: Seq[ConceptCount[Interval[Int]]],
   siteDistribution: Seq[ConceptCount[Coding[Site]]],
   diagnosisCategoryDistribution: Seq[ConceptCount[Coding[Orphanet]]],
   hpoTermDistribution: Seq[ConceptCount[Coding[HPO]]],
-  variantHpoTermAssociation: RDResultSummary.VariantAssociation[HPO],
-  variantDiseaseCategoryAssociation: RDResultSummary.VariantAssociation[Orphanet]
+  variantHpoTermDistributions: RDResultSummary.VariantAssociation[HPO],
+  variantDiseaseCategoryDistributions: RDResultSummary.VariantAssociation[Orphanet]
 ) 
 extends ResultSet.Summary
 
@@ -39,7 +46,7 @@ object RDResultSummary
 {
 
   type VariantAssociation[T] =
-    Seq[(Coding[HGVS],Seq[ConceptCount[Coding[T]]])]
+    Seq[Entry[Coding[HGVS],Seq[ConceptCount[Coding[T]]]]]
 
 
   implicit val writes: OWrites[RDResultSummary] =

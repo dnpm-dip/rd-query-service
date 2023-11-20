@@ -11,7 +11,6 @@ import de.dnpm.dip.service.query.{
   PatientMatch,
   Query,
   BaseResultSet,
-//  ReportingOps,
   Distribution
 }
 import de.dnpm.dip.rd.model.RDPatientRecord
@@ -46,15 +45,15 @@ with BaseResultSet[RDPatientRecord,RDQueryCriteria]
     RDResultSummary(
       id,
       patRecs.size,
-      FrequencyDistribution(
-        patients.flatMap(_.managingSite)
-      ),
-      FrequencyDistribution(
+      DistributionOf(patients.map(_.gender)),
+      AgeDistribution(patients.map(_.age)),
+      DistributionOf(patients.flatMap(_.managingSite)),
+      DistributionOf(
         patRecs.flatMap(
           _.diagnosis.categories.toList
         )
       ),
-      FrequencyDistribution(
+      DistributionOf(
         patRecs.flatMap(
           _.hpoTerms.map(_.value).toList
         )
