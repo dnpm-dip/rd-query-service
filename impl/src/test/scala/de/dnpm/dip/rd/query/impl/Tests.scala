@@ -147,7 +147,7 @@ class Tests extends AsyncFlatSpec
       resultSet <-
         service.resultSet(query.id).map(_.value)
 
-    } yield resultSet.summary.numPatients must equal (dataSets.size) 
+    } yield resultSet.summary().numPatients must equal (dataSets.size) 
 
   }
 

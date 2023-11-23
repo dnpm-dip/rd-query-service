@@ -32,11 +32,14 @@ with BaseResultSet[RDPatientRecord,RDQueryCriteria]
   import RDReportingOps._
 
 
-  override def summary = {
+//  override def summary = {
+  override def summary(
+    filter: RDPatientRecord => Boolean
+  ) = {
 
     val patRecs =
       results.collect {
-        case (Snapshot(patRec,_),_) => patRec
+        case (Snapshot(patRec,_),_) if (filter(patRec)) => patRec
       }
 
     val patients =
