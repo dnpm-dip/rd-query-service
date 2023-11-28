@@ -32,37 +32,37 @@ with BaseResultSet[RDPatientRecord,RDQueryCriteria]
   import RDReportingOps._
 
 
-//  override def summary = {
   override def summary(
     filter: RDPatientRecord => Boolean
   ) = {
 
-    val patRecs =
+    val records =
       results.collect {
         case (Snapshot(patRec,_),_) if (filter(patRec)) => patRec
       }
 
     val patients =
-      patRecs.map(_.patient)
+      records.map(_.patient)
 
     RDResultSummary(
       id,
-      patRecs.size,
+      records.size,
       DistributionOf(patients.map(_.gender)),
       AgeDistribution(patients.map(_.age)),
       DistributionOf(patients.flatMap(_.managingSite)),
-      DistributionOf(
-        patRecs.flatMap(
-          _.diagnosis.categories.toList
+      RDResultSummary.Distributions(
+        DistributionOf(
+          records.flatMap(
+            _.diagnosis.categories.toList
+          )
+        ),
+        DistributionOf(
+          records.flatMap(
+            _.hpoTerms.map(_.value).toList
+          )
         )
       ),
-      DistributionOf(
-        patRecs.flatMap(
-          _.hpoTerms.map(_.value).toList
-        )
-      ),
-      VariantHPOAssociation(patRecs),
-      VariantDiseaseCategoryAssociation(patRecs)
+      DistributionsByVariant(records)
     )
 
   }

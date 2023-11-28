@@ -27,6 +27,7 @@ import play.api.libs.json.{
 }
 
 
+
 final case class RDResultSummary
 (
   id: Query.Id,
@@ -34,20 +35,25 @@ final case class RDResultSummary
   genderDistribution: Seq[ConceptCount[Coding[Gender.Value]]],
   ageDistribution: Seq[ConceptCount[Interval[Int]]],
   siteDistribution: Seq[ConceptCount[Coding[Site]]],
-  diagnosisCategoryDistribution: Seq[ConceptCount[Coding[Orphanet]]],
-  hpoTermDistribution: Seq[ConceptCount[Coding[HPO]]],
-  variantHpoTermDistributions: RDResultSummary.VariantAssociation[HPO],
-  variantDiseaseCategoryDistributions: RDResultSummary.VariantAssociation[Orphanet]
+  totalDistributions: RDResultSummary.Distributions,
+  distributionsByVariant: Seq[Entry[Coding[HGVS],RDResultSummary.Distributions]]
 ) 
 extends ResultSet.Summary
+
 
 
 object RDResultSummary
 {
 
-  type VariantAssociation[T] =
-    Seq[Entry[Coding[HGVS],Seq[ConceptCount[Coding[T]]]]]
+  final case class Distributions
+  (
+    diseaseCategories: Seq[ConceptCount[Coding[Orphanet]]],
+    hpoTerms: Seq[ConceptCount[Coding[HPO]]]
+  )
 
+
+  implicit val writesDistributions: OWrites[Distributions] =
+    Json.writes[Distributions]
 
   implicit val writes: OWrites[RDResultSummary] =
     Json.writes[RDResultSummary]

@@ -12,45 +12,71 @@ import de.dnpm.dip.rd.model.{
   Orphanet,
   RDPatientRecord
 }
-import de.dnpm.dip.rd.query.api.RDResultSummary.VariantAssociation
+import de.dnpm.dip.rd.query.api.RDResultSummary.Distributions
 
 
 
 trait RDReportingOps extends ReportingOps
 {
 
-  def VariantHPOAssociation(
+  def DistributionsByVariant(
     records: Seq[RDPatientRecord]
-  ): VariantAssociation[HPO] =
-    DistributionsOn(
-      records
-    )(
-      _.ngsReports
-       .toList
-       .flatMap(
-         _.variants.getOrElse(List.empty)
-       )
-       .flatMap(_.proteinChange)
-       .distinct,
-      _.hpoTerms.map(_.value).toList,
-    )
+  ): Seq[Entry[Coding[HGVS],Distributions]] = {
+
+    records.foldLeft(
+      Map.empty[Coding[HGVS],(Seq[Coding[HPO]],Seq[Coding[Orphanet]])]
+    ){
+      (acc,record) =>
+
+      val variants =
+        record
+          .ngsReports
+          .toList
+          .flatMap(
+            _.variants.getOrElse(List.empty)
+          )
+          .flatMap(_.proteinChange)
+          .distinct
+
+      val hpoTerms =   
+        record
+          .hpoTerms
+          .map(_.value)
+          .toList
+
+      val diseaseCategories =
+        record.diagnosis
+          .categories
+          .toList
 
 
-  def VariantDiseaseCategoryAssociation(
-    records: Seq[RDPatientRecord]
-  ): VariantAssociation[Orphanet] =
-    DistributionsOn(
-      records
-    )(
-      _.ngsReports
-       .toList
-       .flatMap(
-         _.variants.getOrElse(List.empty)
-       )
-       .flatMap(_.proteinChange)
-       .distinct,
-      _.diagnosis.categories.toList
-    )
+      variants.foldLeft(acc){
+        case (accPr,variant) =>
+          accPr.updatedWith(variant)(
+            _.map {
+               case (hpos,orphas) => (hpos :++ hpoTerms, orphas :++ diseaseCategories)
+            }
+            .orElse(
+              Some((hpoTerms,diseaseCategories))
+            )
+          )
+      }
+
+    }
+    .map {
+      case (variant,(hpos,orphas)) =>
+        Entry(
+          variant,
+          Distributions(
+            DistributionOf(orphas),
+            DistributionOf(hpos)
+          )
+        )
+    }
+    .toSeq
+
+
+  }
 
 }
 object RDReportingOps extends RDReportingOps
