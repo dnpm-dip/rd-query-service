@@ -17,7 +17,8 @@ import de.dnpm.dip.rd.model.RDPatientRecord
 import de.dnpm.dip.rd.query.api.{
   RDQueryCriteria,
   RDResultSet,
-  RDResultSummary
+  RDResultSummary,
+  RDDistributions
 }
 
 
@@ -31,7 +32,6 @@ with BaseResultSet[RDPatientRecord,RDQueryCriteria]
 
   import RDReportingOps._
 
-
   override def summary(
     filter: RDPatientRecord => Boolean
   ) = {
@@ -44,6 +44,31 @@ with BaseResultSet[RDPatientRecord,RDQueryCriteria]
     val patients =
       records.map(_.patient)
 
+
+    RDResultSummary(
+      id,
+      records.size,
+      RDResultSummary.Distributions(
+        DistributionOf(patients.map(_.gender)),
+        AgeDistribution(patients.map(_.age)),
+        DistributionOf(patients.flatMap(_.managingSite)),
+        DistributionOf(
+          records.flatMap(
+            _.diagnosis.categories.toList
+          )
+        ),
+        DistributionOf(
+          records.flatMap(
+            _.hpoTerms.map(_.value).toList
+          )
+        )
+      ),
+      RDResultSummary.GroupedDistributions(
+        DistributionsByVariant(records)
+      )
+    )
+
+/*
     RDResultSummary(
       id,
       records.size,
@@ -64,8 +89,7 @@ with BaseResultSet[RDPatientRecord,RDQueryCriteria]
       ),
       DistributionsByVariant(records)
     )
-
+*/
   }
-
 
 }

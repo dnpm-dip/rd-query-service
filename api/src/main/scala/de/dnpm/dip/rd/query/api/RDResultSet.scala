@@ -27,19 +27,24 @@ import play.api.libs.json.{
 }
 
 
-
 final case class RDResultSummary
 (
   id: Query.Id,
   numPatients: Int,
-  genderDistribution: Seq[ConceptCount[Coding[Gender.Value]]],
-  ageDistribution: Seq[ConceptCount[Interval[Int]]],
-  siteDistribution: Seq[ConceptCount[Coding[Site]]],
-  totalDistributions: RDResultSummary.Distributions,
-  distributionsByVariant: Seq[Entry[Coding[HGVS],RDResultSummary.Distributions]]
+  distributions: RDResultSummary.Distributions,
+  groupedDistributions: RDResultSummary.GroupedDistributions
 ) 
 extends ResultSet.Summary
+{
+  type DistributionsType = RDResultSummary.Distributions
+}
 
+
+case class RDDistributions
+(
+  diseaseCategory: Seq[ConceptCount[Coding[Orphanet]]],
+  hpoTerm: Seq[ConceptCount[Coding[HPO]]]
+)
 
 
 object RDResultSummary
@@ -47,13 +52,29 @@ object RDResultSummary
 
   final case class Distributions
   (
-    diseaseCategories: Seq[ConceptCount[Coding[Orphanet]]],
-    hpoTerms: Seq[ConceptCount[Coding[HPO]]]
+    gender: Seq[ConceptCount[Coding[Gender.Value]]],
+    age: Seq[ConceptCount[Interval[Int]]],
+    site: Seq[ConceptCount[Coding[Site]]],
+    diseaseCategory: Seq[ConceptCount[Coding[Orphanet]]],
+    hpoTerm: Seq[ConceptCount[Coding[HPO]]]
+  )
+  extends ResultSet.Distributions
+
+
+  final case class GroupedDistributions
+  (
+    variant: Seq[Entry[Coding[HGVS],RDDistributions]]
   )
 
 
   implicit val writesDistributions: OWrites[Distributions] =
     Json.writes[Distributions]
+
+  implicit val writesRDDistributions: OWrites[RDDistributions] =
+    Json.writes[RDDistributions]
+
+  implicit val writesGroupedDistributions: OWrites[GroupedDistributions] =
+    Json.writes[GroupedDistributions]
 
   implicit val writes: OWrites[RDResultSummary] =
     Json.writes[RDResultSummary]
