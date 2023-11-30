@@ -159,12 +159,35 @@ trait Completers
       Completer.of {
         _.flatMap(
           hpo =>
+            Set(hpo.complete) ++ (
+              hpo.code.value match {
+                // Little optimization:
+                // Given that HP:0000001 is the root class of HPO,
+                // skip descendants resolution in this case and directly use all concepts
+                case "HP:0000001" =>
+                  CodeSystem[HPO].concepts
+
+                case x =>
+                  CodeSystem[HPO]
+                    .descendantsOf(hpo.code)
+              }
+            )
+            .map(_.toCoding)
+        )
+      }
+
+/*
+    implicit val hpoTermSetCompleter: Completer[Set[Coding[HPO]]] =
+      Completer.of {
+        _.flatMap(
+          hpo =>
             Set(hpo.complete) ++
             CodeSystem[HPO]
               .descendantsOf(hpo.code)
               .map(_.toCoding)
         )
       }
+*/      
 
     Completer.of(
       criteria =>

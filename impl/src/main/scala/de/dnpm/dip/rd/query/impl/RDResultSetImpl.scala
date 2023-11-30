@@ -68,28 +68,6 @@ with BaseResultSet[RDPatientRecord,RDQueryCriteria]
       )
     )
 
-/*
-    RDResultSummary(
-      id,
-      records.size,
-      DistributionOf(patients.map(_.gender)),
-      AgeDistribution(patients.map(_.age)),
-      DistributionOf(patients.flatMap(_.managingSite)),
-      RDResultSummary.Distributions(
-        DistributionOf(
-          records.flatMap(
-            _.diagnosis.categories.toList
-          )
-        ),
-        DistributionOf(
-          records.flatMap(
-            _.hpoTerms.map(_.value).toList
-          )
-        )
-      ),
-      DistributionsByVariant(records)
-    )
-*/
   }
 
 }
