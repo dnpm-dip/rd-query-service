@@ -3,10 +3,10 @@ package de.dnpm.dip.rd.query.api
 
 import de.dnpm.dip.coding.Coding
 import de.dnpm.dip.coding.hgnc.HGNC
+import de.dnpm.dip.coding.hgvs.HGVS
 import de.dnpm.dip.rd.model.{
   RDDiagnosis,
   HPO,
-  HGVS,
   Orphanet,
   Variant,
   RDPatientRecord

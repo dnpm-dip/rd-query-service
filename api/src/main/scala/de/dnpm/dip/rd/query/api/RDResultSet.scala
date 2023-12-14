@@ -3,6 +3,7 @@ package de.dnpm.dip.rd.query.api
 
 
 import de.dnpm.dip.coding.Coding
+import de.dnpm.dip.coding.hgvs.HGVS
 import de.dnpm.dip.model.{
   Gender,
   Interval,
@@ -15,8 +16,8 @@ import de.dnpm.dip.service.query.{
   ConceptCount,
   Entry
 }
+import ResultSet.Demographics
 import de.dnpm.dip.rd.model.{
-  HGVS,
   HPO,
   Orphanet,
   RDPatientRecord
@@ -24,6 +25,84 @@ import de.dnpm.dip.rd.model.{
 import play.api.libs.json.{
   Json,
   OWrites
+}
+
+
+trait RDResultSet extends ResultSet[RDPatientRecord,RDQueryCriteria]
+{
+  type SummaryType = RDResultSet.Summary
+}
+
+object RDResultSet
+{
+
+  final case class Distributions
+  (
+    diseaseCategories: Seq[ConceptCount[Coding[Orphanet]]],
+    hpoTerms: Seq[ConceptCount[Coding[HPO]]]
+  )
+
+  final case class Diagnostics
+  (
+    overall: Distributions,
+    byVariant: Seq[Entry[Coding[HGVS],Distributions]]
+  )
+
+
+  final case class Summary
+  (
+    id: Query.Id,
+    numPatients: Int,
+    demographics: Demographics,
+    diagnostics: Diagnostics
+  )
+  extends ResultSet.Summary
+
+
+  implicit val writesDistributions: OWrites[Distributions] =
+    Json.writes[Distributions]
+
+  implicit val writesDiagnostics: OWrites[Diagnostics] =
+    Json.writes[Diagnostics]
+
+  implicit val writesSummary: OWrites[Summary] =
+    Json.writes[Summary]
+
+}
+
+
+/*
+trait RDResultSet extends ResultSet[RDPatientRecord,RDQueryCriteria]
+{
+
+  def diagnostics(
+    f: RDPatientRecord => Boolean = _ => true
+  ): RDResultSet.Diagnostics
+
+}
+
+object RDResultSet
+{
+
+  final case class Distributions
+  (
+    diseaseCategories: Seq[ConceptCount[Coding[Orphanet]]],
+    hpoTerms: Seq[ConceptCount[Coding[HPO]]]
+  )
+
+  final case class Diagnostics
+  (
+    id: Query.Id,
+    overall: Distributions,
+    byVariant: Seq[Entry[Coding[HGVS],Distributions]]
+  )
+
+  implicit val writesDistributions: OWrites[Distributions] =
+    Json.writes[Distributions]
+
+  implicit val writesDiagnostics: OWrites[Diagnostics] =
+    Json.writes[Diagnostics]
+
 }
 
 
@@ -86,4 +165,4 @@ extends ResultSet[RDPatientRecord,RDQueryCriteria]
 {
   type Summary = RDResultSummary
 }
-
+*/

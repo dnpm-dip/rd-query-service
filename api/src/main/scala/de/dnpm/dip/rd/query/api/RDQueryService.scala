@@ -7,17 +7,7 @@ import de.dnpm.dip.util.{
   SPI,
   SPILoader
 }
-import de.dnpm.dip.coding.Coding
-import de.dnpm.dip.rd.model.{
-  RDDiagnosis,
-  HPO,
-  HGVS,
-  Variant,
-  RDPatientRecord
-}
-import de.dnpm.dip.service.query.{
-  QueryService
-}
+import de.dnpm.dip.service.query.QueryService
 
 
 

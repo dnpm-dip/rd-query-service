@@ -2,18 +2,18 @@ package de.dnpm.dip.rd.query.impl
 
 
 import de.dnpm.dip.coding.Coding
+import de.dnpm.dip.coding.hgvs.HGVS
 import de.dnpm.dip.service.query.{
   ReportingOps,
   Entry
 }
 import de.dnpm.dip.rd.model.{
-  HGVS,
   HPO,
   Orphanet,
   RDPatientRecord
 }
-import de.dnpm.dip.rd.query.api.RDDistributions
-//import de.dnpm.dip.rd.query.api.RDResultSummary.Distributions
+//import de.dnpm.dip.rd.query.api.RDDistributions
+import de.dnpm.dip.rd.query.api.RDResultSet.Distributions
 
 
 
@@ -22,7 +22,7 @@ trait RDReportingOps extends ReportingOps
 
   def DistributionsByVariant(
     records: Seq[RDPatientRecord]
-  ): Seq[Entry[Coding[HGVS],RDDistributions]] = {
+  ): Seq[Entry[Coding[HGVS],Distributions]] = {
 
     records.foldLeft(
       Map.empty[Coding[HGVS],(Seq[Coding[HPO]],Seq[Coding[Orphanet]])]
@@ -68,7 +68,7 @@ trait RDReportingOps extends ReportingOps
       case (variant,(hpos,orphas)) =>
         Entry(
           variant,
-          RDDistributions(
+          Distributions(
             DistributionOf(orphas),
             DistributionOf(hpos)
           )
