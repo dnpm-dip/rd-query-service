@@ -32,8 +32,7 @@ with BaseResultSet[RDPatientRecord,RDQueryCriteria]
   import RDReportingOps._
   import RDResultSet.{
     Summary,
-    Diagnostics,
-    Distributions
+    Diagnostics
   }
 
   override def summary(
@@ -50,7 +49,7 @@ with BaseResultSet[RDPatientRecord,RDQueryCriteria]
       patients.size,
       ResultSet.Demographics.on(patients),
       Diagnostics(
-        Distributions(
+        Diagnostics.Distributions(
           DistributionOf(
             records.flatMap(
               _.diagnosis.categories.toList
@@ -68,72 +67,4 @@ with BaseResultSet[RDPatientRecord,RDQueryCriteria]
 
   }
 
-/*
-  override def diagnostics(
-    f: RDPatientRecord => Boolean
-  ): RDResultSet.Diagnostics = {
-
-    val patients =
-      records.collect {
-        case record if f(record) => record.patient
-      }
-
-    RDResultSet.Diagnostics(
-      id,
-      RDResultSet.Distributions(
-        DistributionOf(
-          records.flatMap(
-            _.diagnosis.categories.toList
-          )
-        ),
-        DistributionOf(
-          records.flatMap(
-            _.hpoTerms.map(_.value).toList
-          )
-        )
-      ),
-      DistributionsByVariant(records)
-    )
-
-  }
-*/
-/*  
-  override def summary(
-    filter: RDPatientRecord => Boolean
-  ) = {
-
-    val records =
-      results.collect {
-        case (Snapshot(patRec,_),_) if (filter(patRec)) => patRec
-      }
-
-    val patients =
-      records.map(_.patient)
-
-
-    RDResultSummary(
-      id,
-      records.size,
-      RDResultSummary.Distributions(
-        DistributionOf(patients.map(_.gender)),
-        AgeDistribution(patients.map(_.age)),
-        DistributionOf(patients.flatMap(_.managingSite)),
-        DistributionOf(
-          records.flatMap(
-            _.diagnosis.categories.toList
-          )
-        ),
-        DistributionOf(
-          records.flatMap(
-            _.hpoTerms.map(_.value).toList
-          )
-        )
-      ),
-      RDResultSummary.GroupedDistributions(
-        DistributionsByVariant(records)
-      )
-    )
-
-  }
-*/
 }

@@ -176,19 +176,6 @@ trait Completers
         )
       }
 
-/*
-    implicit val hpoTermSetCompleter: Completer[Set[Coding[HPO]]] =
-      Completer.of {
-        _.flatMap(
-          hpo =>
-            Set(hpo.complete) ++
-            CodeSystem[HPO]
-              .descendantsOf(hpo.code)
-              .map(_.toCoding)
-        )
-      }
-*/      
-
     Completer.of(
       criteria =>
         criteria.copy(

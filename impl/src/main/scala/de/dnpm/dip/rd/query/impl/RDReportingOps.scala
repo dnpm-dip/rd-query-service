@@ -12,8 +12,7 @@ import de.dnpm.dip.rd.model.{
   Orphanet,
   RDPatientRecord
 }
-//import de.dnpm.dip.rd.query.api.RDDistributions
-import de.dnpm.dip.rd.query.api.RDResultSet.Distributions
+import de.dnpm.dip.rd.query.api.RDResultSet.Diagnostics.Distributions
 
 
 
