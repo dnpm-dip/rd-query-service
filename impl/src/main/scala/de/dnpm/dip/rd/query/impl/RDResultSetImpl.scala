@@ -50,18 +50,18 @@ with BaseResultSet[RDPatientRecord,RDQueryCriteria]
       ResultSet.Demographics.on(patients),
       Diagnostics(
         Diagnostics.Distributions(
-          DistributionOf(
+          distribution(
             records.flatMap(
               _.diagnosis.categories.toList
             )
           ),
-          DistributionOf(
+          distribution(
             records.flatMap(
               _.hpoTerms.map(_.value).toList
             )
           )
         ),
-        DistributionsByVariant(records)
+        distributionsByVariant(records)
       )
     )
 

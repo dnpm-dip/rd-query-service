@@ -19,7 +19,7 @@ import de.dnpm.dip.rd.query.api.RDResultSet.Diagnostics.Distributions
 trait RDReportingOps extends ReportingOps
 {
 
-  def DistributionsByVariant(
+  def distributionsByVariant(
     records: Seq[RDPatientRecord]
   ): Seq[Entry[Coding[HGVS],Distributions]] = {
 
@@ -68,8 +68,8 @@ trait RDReportingOps extends ReportingOps
         Entry(
           variant,
           Distributions(
-            DistributionOf(orphas),
-            DistributionOf(hpos)
+            distribution(orphas),
+            distribution(hpos)
           )
         )
     }
