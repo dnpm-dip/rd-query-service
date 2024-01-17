@@ -12,7 +12,6 @@ import de.dnpm.dip.service.query.{
   Query,
   ResultSet,
   BaseResultSet,
-  Distribution
 }
 import de.dnpm.dip.rd.model.RDPatientRecord
 import de.dnpm.dip.rd.query.api.{
