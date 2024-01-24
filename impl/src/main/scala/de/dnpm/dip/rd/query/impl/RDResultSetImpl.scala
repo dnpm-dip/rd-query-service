@@ -11,7 +11,6 @@ import de.dnpm.dip.service.query.{
   PatientMatch,
   Query,
   ResultSet,
-  BaseResultSet,
 }
 import de.dnpm.dip.rd.model.RDPatientRecord
 import de.dnpm.dip.rd.query.api.{
@@ -25,7 +24,6 @@ class RDResultSetImpl(
   val results: Seq[(Snapshot[RDPatientRecord],RDQueryCriteria)]
 )
 extends RDResultSet
-with BaseResultSet[RDPatientRecord,RDQueryCriteria]
 {
 
   import RDReportingOps._
@@ -33,6 +31,10 @@ with BaseResultSet[RDPatientRecord,RDQueryCriteria]
     Summary,
     Diagnostics
   }
+
+  private lazy val records =
+    results.collect { case (Snapshot(record,_),_) => record }
+
 
   override def summary(
     f: RDPatientRecord => Boolean
