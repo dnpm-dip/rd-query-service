@@ -13,8 +13,9 @@ import de.dnpm.dip.service.query.{
   PatientFilter,
   Query,
   ResultSet,
-  ConceptCount,
-  Entry
+//  ConceptCount,
+  Entry,
+  Distribution
 }
 import ResultSet.Demographics
 import de.dnpm.dip.rd.model.{
@@ -41,8 +42,8 @@ object RDResultSet
 
     final case class Distributions
     (
-      diseaseCategoryDistribution: Seq[ConceptCount[Coding[Orphanet]]],
-      hpoTermDistribution: Seq[ConceptCount[Coding[HPO]]]
+      diseaseCategoryDistribution: Distribution[Coding[Orphanet]],
+      hpoTermDistribution: Distribution[Coding[HPO]]
     )
 
     implicit val writesDistributions: OWrites[Distributions] =

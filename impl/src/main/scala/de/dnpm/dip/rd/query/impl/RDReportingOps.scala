@@ -4,7 +4,7 @@ package de.dnpm.dip.rd.query.impl
 import de.dnpm.dip.coding.Coding
 import de.dnpm.dip.coding.hgvs.HGVS
 import de.dnpm.dip.service.query.{
-  ReportingOps,
+  Distribution,
   Entry
 }
 import de.dnpm.dip.rd.model.{
@@ -16,7 +16,7 @@ import de.dnpm.dip.rd.query.api.RDResultSet.Diagnostics.Distributions
 
 
 
-trait RDReportingOps extends ReportingOps
+trait RDReportingOps
 {
 
   def distributionsByVariant(
@@ -68,8 +68,8 @@ trait RDReportingOps extends ReportingOps
         Entry(
           variant,
           Distributions(
-            distribution(orphas),
-            distribution(hpos)
+            Distribution.of(orphas),
+            Distribution.of(hpos)
           )
         )
     }

@@ -11,6 +11,7 @@ import de.dnpm.dip.service.query.{
   PatientMatch,
   Query,
   ResultSet,
+  Distribution
 }
 import de.dnpm.dip.rd.model.RDPatientRecord
 import de.dnpm.dip.rd.query.api.{
@@ -51,12 +52,12 @@ extends RDResultSet
       ResultSet.Demographics.on(patients),
       Diagnostics(
         Diagnostics.Distributions(
-          distribution(
+          Distribution.of(
             records.flatMap(
               _.diagnosis.categories.toList
             )
           ),
-          distribution(
+          Distribution.of(
             records.flatMap(
               _.hpoTerms.map(_.value).toList
             )
