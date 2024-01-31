@@ -2,7 +2,6 @@ package de.dnpm.dip.rd.query.impl
 
 
 import de.dnpm.dip.coding.Coding
-import de.dnpm.dip.coding.hgvs.HGVS
 import de.dnpm.dip.service.query.{
   Distribution,
   Entry
@@ -10,7 +9,8 @@ import de.dnpm.dip.service.query.{
 import de.dnpm.dip.rd.model.{
   HPO,
   Orphanet,
-  RDPatientRecord
+  RDPatientRecord,
+  Variant
 }
 import de.dnpm.dip.rd.query.api.RDResultSet.Diagnostics.Distributions
 
@@ -21,10 +21,10 @@ trait RDReportingOps
 
   def distributionsByVariant(
     records: Seq[RDPatientRecord]
-  ): Seq[Entry[Coding[HGVS],Distributions]] = {
+  ): Seq[Entry[String,Distributions]] = {
 
     records.foldLeft(
-      Map.empty[Coding[HGVS],(Seq[Coding[HPO]],Seq[Coding[Orphanet]])]
+      Map.empty[String,(Seq[Coding[HPO]],Seq[Coding[Orphanet]])]
     ){
       (acc,record) =>
 
@@ -32,10 +32,8 @@ trait RDReportingOps
         record
           .ngsReports
           .toList
-          .flatMap(
-            _.variants.getOrElse(List.empty)
-          )
-          .flatMap(_.proteinChange)
+          .flatMap(_.variants.getOrElse(List.empty))
+          .map(Variant.display)
           .distinct
 
       val hpoTerms =   
