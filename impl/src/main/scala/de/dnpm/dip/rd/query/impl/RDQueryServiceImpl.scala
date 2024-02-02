@@ -39,7 +39,9 @@ import de.dnpm.dip.coding.{
 import de.dnpm.dip.coding.hgnc.HGNC
 import de.dnpm.dip.rd.model.{
   HPO,
+  HPOTerm,
   Orphanet,
+  RDDiagnosis,
   RDPatientRecord
 }
 import de.dnpm.dip.rd.query.api._
@@ -151,6 +153,34 @@ with Completers
         )
       )
     )
+  }
+
+
+  import scala.language.implicitConversions
+
+  override implicit def toPredicate(
+    filter: RDFilters
+  ): RDPatientRecord => Boolean = {
+    record =>
+
+      implicit def hpoFilterPredicate(f: HPOFilter): HPOTerm => Boolean =
+        term =>
+          f.value match {
+            case Some(hpos) if hpos.nonEmpty => hpos exists (_.code == term.value.code)
+            case _ => true
+          }
+
+      implicit def diagnosisFilterPredicate(f: DiagnosisFilter): RDDiagnosis => Boolean =
+        diag =>
+          f.category match {
+             case Some(orphas) if orphas.nonEmpty => diag.categories exists (c => orphas exists (_.code == c.code))
+             case _ => true
+          }
+
+      filter.patientFilter(record.patient) &&
+      record.hpoTerms.exists(filter.hpoFilter) &&
+      filter.diagnosisFilter(record.diagnosis)
+
   }
 
 

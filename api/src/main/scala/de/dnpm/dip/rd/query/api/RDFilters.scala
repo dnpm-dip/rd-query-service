@@ -31,31 +31,12 @@ final case class HPOFilter
 (
   value: Option[Set[Coding[HPO]]]
 )
-extends (HPOTerm => Boolean)
-{
-  override def apply(term: HPOTerm) =
-    value match {
-      case Some(hpos) if hpos.nonEmpty =>
-        hpos exists (_.code == term.value.code)
-      case _ => true
-    }
-}
 
 
 final case class DiagnosisFilter
 (
   category: Option[Set[Coding[Orphanet]]]
 )
-extends (RDDiagnosis => Boolean)
-{
-  override def apply(diag: RDDiagnosis) =
-    category match {
-       case Some(orphas) if orphas.nonEmpty =>
-         diag.categories exists (c => orphas exists (_.code == c.code))
-
-       case _ => true
-    }
-}
 
 
 final case class RDFilters
@@ -65,17 +46,6 @@ final case class RDFilters
   diagnosisFilter: DiagnosisFilter
 )
 extends Filters[RDPatientRecord]
-{
-
-  override def apply(patRec: RDPatientRecord): Boolean = {
-
-    patientFilter(patRec.patient) && 
-    patRec.hpoTerms.exists(term => hpoFilter(term)) &&
-    diagnosisFilter(patRec.diagnosis)
-  }
-
-}
-
 
 object RDFilters
 {
