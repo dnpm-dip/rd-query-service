@@ -45,7 +45,10 @@ import de.dnpm.dip.rd.model.{
   RDPatientRecord
 }
 import de.dnpm.dip.rd.query.api._
-import de.dnpm.dip.connector.peer2peer.PeerToPeerConnector
+import de.dnpm.dip.connector.{
+  FakeConnector,
+  HttpConnector
+}
 
 
 
@@ -66,11 +69,20 @@ object RDQueryServiceImpl extends Logging
     new BaseQueryCache[RDQueryCriteria,RDFilters,RDResultSet,RDPatientRecord]
 
 
-  private val connector =
-    PeerToPeerConnector(
-      "/api/rd/peer2peer/",
-      PartialFunction.empty
-    )
+  private lazy val connector =
+    System.getProperty("dnpm.dip.connector.type","peer2peer") match {
+      case HttpConnector.Type(typ) =>
+        HttpConnector(
+          typ,
+          "/api/rd/peer2peer/",
+          PartialFunction.empty
+        )
+
+      case _ => 
+        import scala.concurrent.ExecutionContext.Implicits._
+        log.warn("Falling back to Fake Connector!")
+        FakeConnector[Future]
+    }
 
 
   private val db =
