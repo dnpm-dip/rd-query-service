@@ -25,9 +25,12 @@ import de.dnpm.dip.service.query.{
   PreparedQueryDB,
   InMemPreparedQueryDB
 }
-import de.dnpm.dip.connector.fake.FakeConnector
+import de.dnpm.dip.connector.FakeConnector
 import de.ekut.tbi.generators.Gen
-import play.api.libs.json.{Json,Writes}
+import play.api.libs.json.{
+  Json,
+  Writes
+}
 
 
 class Tests extends AsyncFlatSpec
@@ -128,8 +131,9 @@ class Tests extends AsyncFlatSpec
 
 
   val queryMode =
-    CodeSystem[Query.Mode.Value]
-      .coding(Query.Mode.Local)
+    Some(
+      Coding(Query.Mode.Local)
+    )
 
 
   "Query ResultSet" must "contain the total number of data sets for a query without criteria" in {
@@ -138,6 +142,7 @@ class Tests extends AsyncFlatSpec
       result <-
         service ! Query.Submit(
           queryMode,
+          None,
           RDQueryCriteria(None,None,None)
         )
 
@@ -160,6 +165,7 @@ class Tests extends AsyncFlatSpec
       result <-
         service ! Query.Submit(
           queryMode,
+          None,
           genCriteria.next
         )
 
