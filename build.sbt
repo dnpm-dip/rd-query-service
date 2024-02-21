@@ -31,6 +31,7 @@ lazy val api = project
     name := "rd-query-service-api",
     settings,
     libraryDependencies ++= Seq(
+      dependencies.scalatest,
       dependencies.rd_model,
       dependencies.service_base
     )
