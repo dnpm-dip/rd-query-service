@@ -19,7 +19,7 @@ import de.dnpm.dip.service.query.{
 import ResultSet.Demographics
 import de.dnpm.dip.rd.model.{
   HPO,
-  Orphanet,
+  RDDiagnosis,
   RDPatientRecord
 }
 import play.api.libs.json.{
@@ -41,7 +41,7 @@ object RDResultSet
 
     final case class Distributions
     (
-      diseaseCategories: Distribution[Coding[Orphanet]],
+      diseaseCategories: Distribution[Coding[RDDiagnosis.Category]],
       hpoTerms: Distribution[Coding[HPO]]
     )
 
@@ -54,7 +54,6 @@ object RDResultSet
   (
     overallDistributions: Diagnostics.Distributions,
     distributionsByVariant: Seq[Entry[String,Diagnostics.Distributions]]
-//    distributionsByVariant: Seq[Entry[Coding[HGVS],Diagnostics.Distributions]]
   )
 
 

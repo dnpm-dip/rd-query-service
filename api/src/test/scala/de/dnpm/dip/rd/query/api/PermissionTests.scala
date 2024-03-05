@@ -7,7 +7,7 @@ import org.scalatest.Inspectors._
 import de.dnpm.dip.service.auth.Permissions
 
 
-class SPITests extends AnyFlatSpec
+class PermissionTests extends AnyFlatSpec
 {
 
   val spiTry = 
@@ -24,6 +24,16 @@ class SPITests extends AnyFlatSpec
   "Permission set" must "be non-empty" in {
 
     spiTry.get.permissions must not be (empty)
+
+  }
+
+  "Pattern matching of submission names" must "have been successful" in {
+
+    RDPermissions
+      .permissions
+      .map(_.name)
+      .collect { case RDPermissions(p) => p }
+      .toSet must equal (RDPermissions.values.toSet)
 
   }
 

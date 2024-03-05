@@ -87,21 +87,15 @@ class Tests extends AsyncFlatSpec
         patRec
           .ngsReports
           .head 
-          .variants.getOrElse(List.empty)
+          .variants
           .head // Safe: generated variant lists always non-empty
 
       variantCriteria =  
         VariantCriteria(
-          Some(variant.gene),
+          variant.genes.flatMap(_.headOption),
           variant.cDNAChange,
           variant.gDNAChange,
           variant.proteinChange,
-          None,
-          None,
-          None,
-          None,
-          None,
-          None,
         )
       
     } yield RDQueryCriteria(

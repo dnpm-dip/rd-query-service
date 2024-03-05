@@ -13,25 +13,36 @@ import de.dnpm.dip.model.{
   Site
 }
 import de.dnpm.dip.coding.{
+  Code,
   Coding,
   CodeSystem,
   CodeSystemProvider
 }
 import de.dnpm.dip.coding.hgnc.HGNC
+import de.dnpm.dip.coding.hgvs.HGVS
+import de.dnpm.dip.coding.icd.ICD10GM
 import de.dnpm.dip.rd.model.{
+  ACMG,
   HPO,
   HPOTerm,
+  OMIM,
   Orphanet,
   RDDiagnosis,
   RDNGSReport,
   RDPatientRecord,
-  Variant
+  SmallVariant,
+  CopyNumberVariant,
+  StructuralVariant
 }
 import de.dnpm.dip.rd.query.api.{
   VariantCriteria,
   RDQueryCriteria
 }
-
+import shapeless.{
+  Coproduct,
+  :+:,
+  CNil
+}
 
 
 trait Completers
@@ -52,6 +63,10 @@ trait Completers
 
   implicit val ordo: CodeSystem[Orphanet]
 
+  implicit val omim: CodeSystem[OMIM]
+
+  implicit val icd10gm: CodeSystemProvider[ICD10GM,Id,Applicative[Id]]
+
 
   implicit val patientCompleter: Completer[Patient] =
     Completer.of(
@@ -61,6 +76,57 @@ trait Completers
           managingSite = Some(localSite)
         )
     )
+
+
+  implicit def coproductCodingCompleter[
+    H: Coding.System,
+    T <: Coproduct
+  ](
+    implicit
+    compH: Completer[Coding[H]],
+    compT: Completer[Coding[T]]
+  ): Completer[Coding[H :+: T]] =
+    Completer.of { 
+      coding =>
+        (
+          if (coding.system == Coding.System[H].uri)
+            compH(coding.asInstanceOf[Coding[H]])
+          else
+            compT(coding.asInstanceOf[Coding[T]])
+        )
+        .asInstanceOf[Coding[H :+: T]]
+    }
+
+  implicit def terminalCoproductCodingCompleter[
+    H: Coding.System
+  ](
+    implicit
+    compH: Completer[Coding[H]],
+  ): Completer[Coding[H :+: CNil]] =
+    compH.asInstanceOf[Completer[Coding[H :+: CNil]]]
+
+
+
+/*
+  implicit val diagCategoryCompleter: Completer[Coding[RDDiagnosis.Category]] = 
+    Completer.of { 
+      coding =>
+        (
+          coding.system match {
+            case sys if sys == Coding.System[Orphanet].uri =>
+              coding.asInstanceOf[Coding[Orphanet]].complete
+            
+            case sys if sys == Coding.System[OMIM].uri =>
+              coding.asInstanceOf[Coding[OMIM]].complete
+            
+            case sys if sys == Coding.System[ICD10GM].uri =>
+              coding.asInstanceOf[Coding[ICD10GM]].complete
+          }
+        )
+        .asInstanceOf[Coding[RDDiagnosis.Category]]
+
+    }
+*/
 
 
   implicit val diagnosisCompleter: Completer[RDDiagnosis] =
@@ -82,11 +148,51 @@ trait Completers
     )
 
 
-  implicit val variantCompleter: Completer[Variant] =
+  implicit val acmgCriterionCompleter: Completer[ACMG.Criterion] =
+    Completer.of(
+      acmg =>
+        acmg.copy(
+          value    = acmg.value.complete,
+          modifier = acmg.modifier.complete
+        )
+    )
+
+
+  implicit val smallVariantCompleter: Completer[SmallVariant] =
     Completer.of(
       v =>
         v.copy(
-          gene                = v.gene.complete,
+          genes               = v.genes.complete,
+          acmgClass           = v.acmgClass.complete,
+          acmgCriteria        = v.acmgCriteria.complete,
+          zygosity            = v.zygosity.complete,
+          segregationAnalysis = v.segregationAnalysis.complete,
+          modeOfInheritance   = v.modeOfInheritance.complete,
+          significance        = v.significance.complete,
+        )
+    )
+
+
+  implicit val structuralVariantCompleter: Completer[StructuralVariant] =
+    Completer.of(
+      v =>
+        v.copy(
+          genes               = v.genes.complete,
+          acmgClass           = v.acmgClass.complete,
+          acmgCriteria        = v.acmgCriteria.complete,
+          zygosity            = v.zygosity.complete,
+          segregationAnalysis = v.segregationAnalysis.complete,
+          modeOfInheritance   = v.modeOfInheritance.complete,
+          significance        = v.significance.complete,
+        )
+    )
+
+
+  implicit val copyNumberVariantCompleter: Completer[CopyNumberVariant] =
+    Completer.of(
+      v =>
+        v.copy(
+          genes               = v.genes.complete,
           acmgClass           = v.acmgClass.complete,
           acmgCriteria        = v.acmgCriteria.complete,
           zygosity            = v.zygosity.complete,
@@ -101,7 +207,9 @@ trait Completers
     Completer.of(
       ngs =>
         ngs.copy(
-          variants = ngs.variants.complete
+          smallVariants      = ngs.smallVariants.complete,
+          structuralVariants = ngs.structuralVariants.complete,
+          copyNumberVariants = ngs.copyNumberVariants.complete
         )
     )
 
@@ -115,15 +223,29 @@ trait Completers
           hpoTerms   = patRec.hpoTerms.complete,
           ngsReports = patRec.ngsReports.complete
         )
-  )
+    )
 
 
-  implicit val variantCriteriaCompleter: Completer[VariantCriteria] =
+  implicit val variantCriteriaCompleter: Completer[VariantCriteria] = {
+
+    val proteinChangeCompleter: Completer[Coding[HGVS]] =
+      Completer.of {
+        coding =>
+          val threeLetterCode = HGVS.Protein.to3LetterCode(coding.code.value)
+          coding.copy(
+            code = Code[HGVS](threeLetterCode),
+            display = coding.display.orElse(Some(threeLetterCode))
+          )
+      }
+
     Completer.of(vc =>
       vc.copy(
-        gene = vc.gene.complete
+        gene          = vc.gene.complete,
+        proteinChange = vc.proteinChange.map(proteinChangeCompleter)
       )
     )
+
+  }
 
 
   implicit val criteriaCompleter: Completer[RDQueryCriteria] = {

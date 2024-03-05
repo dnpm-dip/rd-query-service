@@ -1,6 +1,7 @@
 package de.dnpm.dip.rd.query.impl
 
 
+import de.dnpm.dip.util.DisplayLabel
 import de.dnpm.dip.coding.Coding
 import de.dnpm.dip.service.query.{
   Distribution,
@@ -8,7 +9,7 @@ import de.dnpm.dip.service.query.{
 }
 import de.dnpm.dip.rd.model.{
   HPO,
-  Orphanet,
+  RDDiagnosis,
   RDPatientRecord,
   Variant
 }
@@ -24,7 +25,7 @@ trait RDReportingOps
   ): Seq[Entry[String,Distributions]] = {
 
     records.foldLeft(
-      Map.empty[String,(Seq[Coding[HPO]],Seq[Coding[Orphanet]])]
+      Map.empty[String,(Seq[Coding[HPO]],Seq[Coding[RDDiagnosis.Category]])]
     ){
       (acc,record) =>
 
@@ -32,8 +33,8 @@ trait RDReportingOps
         record
           .ngsReports
           .toList
-          .flatMap(_.variants.getOrElse(List.empty))
-          .map(Variant.display)
+          .flatMap(_.variants)
+          .map(DisplayLabel.of(_).value)
           .distinct
 
       val hpoTerms =   

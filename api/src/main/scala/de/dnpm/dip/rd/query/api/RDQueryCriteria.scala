@@ -7,7 +7,6 @@ import de.dnpm.dip.coding.hgvs.HGVS
 import de.dnpm.dip.rd.model.{
   RDDiagnosis,
   HPO,
-  Orphanet,
   Variant,
   RDPatientRecord
 }
@@ -26,15 +25,6 @@ object Operator extends Enumeration
 {
   val AND, OR = Value
 
-/*
-  def unapply(s: String): Option[Operator.Value] =
-    s.toLowerCase match {
-      case "and" | "&&" => Some(AND)
-      case "or"  | "||" => Some(OR)
-      case _            => None
-    }
-*/
-
   implicit val format: Format[Value] =
     Json.formatEnum(this)
 }
@@ -47,7 +37,7 @@ trait Criteria
 
 final case class RDQueryCriteria
 (
-  diagnoses: Option[Set[Coding[Orphanet]]],
+  diagnoses: Option[Set[Coding[RDDiagnosis.Category]]],
   hpoTerms: Option[Set[Coding[HPO]]],
   variants: Option[Set[VariantCriteria]]
 )
@@ -67,7 +57,7 @@ extends Criteria
 final case class DiagnosisCriteria
 (
   operator: Option[Operator.Value],
-  categories: Set[Coding[Orphanet]],
+  categories: Set[Coding[RDDiagnosis.Category]],
 )
 extends Criteria
 
@@ -81,19 +71,20 @@ extends Criteria
 
 final case class VariantCriteria
 (
-//  operator: Option[Operator.Value],
+//  genes: Option[Set[Coding[HGNC]]],
   gene: Option[Coding[HGNC]],
   cDNAChange: Option[Coding[HGVS]],
   gDNAChange: Option[Coding[HGVS]],
   proteinChange: Option[Coding[HGVS]],
+/*  
   acmgClass: Option[Set[Coding[Variant.ACMGClass]]],
   acmgCriteria: Option[Set[Coding[Variant.ACMGCriteria]]],
   zygosity: Option[Set[Coding[Variant.Zygosity]]],
   segregationAnalysis: Option[Set[Coding[Variant.SegregationAnalysis]]],
   modeOfInheritance: Option[Set[Coding[Variant.InheritanceMode]]],
   significance: Option[Set[Coding[Variant.Significance]]],
+*/
 )
-//extends Criteria
 
 object RDQueryCriteria
 {

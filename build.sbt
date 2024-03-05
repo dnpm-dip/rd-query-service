@@ -47,6 +47,11 @@ lazy val impl = project
       dependencies.rd_generators,
       dependencies.connector_base,
       dependencies.hgnc,
+      dependencies.hpo,
+      dependencies.omim,
+      dependencies.orphanet,
+      dependencies.icd10gm,
+      dependencies.icd_catalogs,
     )
   )
   .dependsOn(
@@ -67,6 +72,11 @@ lazy val dependencies =
     val service_base   = "de.dnpm.dip"    %% "service-base"       % "1.0-SNAPSHOT"
     val connector_base = "de.dnpm.dip"    %% "connector-base"     % "1.0-SNAPSHOT"
     val hgnc           = "de.dnpm.dip"    %% "hgnc-gene-set-impl" % "1.0-SNAPSHOT" % Test
+    val hpo            = "de.dnpm.dip"    %% "hp-ontology"        % "1.0-SNAPSHOT" % Test
+    val omim           = "de.dnpm.dip"    %% "omim-catalog"       % "1.0-SNAPSHOT" % Test
+    val orphanet       = "de.dnpm.dip"    %% "orphanet-ordo"      % "1.0-SNAPSHOT" % Test
+    val icd10gm        = "de.dnpm.dip"    %% "icd10gm-impl"       % "1.0-SNAPSHOT" % Test
+    val icd_catalogs   = "de.dnpm.dip"    %% "icd-claml-packaged" % "1.0-SNAPSHOT" % Test
   }
 
 

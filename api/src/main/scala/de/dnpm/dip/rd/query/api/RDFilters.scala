@@ -23,7 +23,6 @@ import de.dnpm.dip.rd.model.{
   RDPatientRecord,
   HPO,
   HPOTerm,
-  Orphanet
 }
 
 
@@ -35,7 +34,7 @@ final case class HPOFilter
 
 final case class DiagnosisFilter
 (
-  category: Option[Set[Coding[Orphanet]]]
+  category: Option[Set[Coding[RDDiagnosis.Category]]]
 )
 
 

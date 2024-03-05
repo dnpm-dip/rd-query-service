@@ -8,7 +8,11 @@ import scala.util.{
   Try,
   Failure
 }
-import cats.Monad
+import cats.{
+  Applicative,
+  Id,
+  Monad
+}
 import de.dnpm.dip.util.{
   Completer,
   Logging
@@ -34,12 +38,15 @@ import de.dnpm.dip.service.query.{
 }
 import de.dnpm.dip.coding.{
   Coding,
-  CodeSystem
+  CodeSystem,
+  CodeSystemProvider
 }
 import de.dnpm.dip.coding.hgnc.HGNC
+import de.dnpm.dip.coding.icd.ICD10GM
 import de.dnpm.dip.rd.model.{
   HPO,
   HPOTerm,
+  OMIM,
   Orphanet,
   RDDiagnosis,
   RDPatientRecord
@@ -206,8 +213,16 @@ with Completers
       .get
       .latest
 
+
   override implicit val ordo: CodeSystem[Orphanet] =
     Orphanet.Ordo
+      .getInstance[cats.Id]
+      .get
+      .latest
+
+
+  override implicit val omim: CodeSystem[OMIM] =
+    OMIM.Catalog
       .getInstance[cats.Id]
       .get
       .latest
@@ -219,12 +234,15 @@ with Completers
       .get
       .latest
 
-        
+  override implicit val icd10gm: CodeSystemProvider[ICD10GM,Id,Applicative[Id]] =
+    ICD10GM.Catalogs
+      .getInstance[cats.Id]
+      .get
+  
+
   import Completer.syntax._    
 
-  //TODO: Complete codings, etc
   override val preprocess: RDPatientRecord => RDPatientRecord =
     _.complete
-
 
 }
