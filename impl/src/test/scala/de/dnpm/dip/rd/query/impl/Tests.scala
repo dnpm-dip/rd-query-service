@@ -39,6 +39,9 @@ class Tests extends AsyncFlatSpec
   import scala.util.chaining._
   import de.dnpm.dip.rd.gens.Generators._
 
+  System.setProperty("dnpm.dip.connector.type","fake")
+  System.setProperty(RDLocalDB.dataGenProp,"0")
+
 
   implicit val rnd: Random =
     new Random
@@ -46,14 +49,12 @@ class Tests extends AsyncFlatSpec
   implicit val querier: Querier =
     Querier("Dummy-Querier-ID")
 
-  
-  val service =
-    new RDQueryServiceImpl(
-      new InMemPreparedQueryDB[Future,Monad,RDQueryCriteria],
-      new InMemRDLocalDB(strict = false),
-      FakeConnector[Future],
-      new BaseQueryCache[RDQueryCriteria,RDFilters,RDResultSet,RDPatientRecord]
-    )
+
+  val serviceTry =
+    RDQueryService.getInstance
+
+  lazy val service = serviceTry.get
+
 
 
   val dataSets =
@@ -112,6 +113,9 @@ class Tests extends AsyncFlatSpec
      .tap(println)
 
 
+  "SPI" must "have worked" in {
+    serviceTry.isSuccess mustBe true
+  }
 
 
   "Importing RDPatientRecords" must "have worked" in {
@@ -119,7 +123,7 @@ class Tests extends AsyncFlatSpec
     for {
       outcomes <-
         Future.traverse(dataSets)(service ! Data.Save(_))
-    } yield forAll(outcomes){ _.isRight mustBe true }
+    } yield all (outcomes.map(_.isRight)) mustBe true 
     
   }
 

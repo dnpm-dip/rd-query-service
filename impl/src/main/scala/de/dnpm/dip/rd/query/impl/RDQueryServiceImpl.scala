@@ -28,13 +28,13 @@ import de.dnpm.dip.service.query.{
   Connector,
   Filters,
   Data,
+  LocalDB,
   Query,
   QueryCache,
   BaseQueryCache,
   PatientFilter,
-  InMemLocalDB,
   PreparedQueryDB,
-  InMemPreparedQueryDB,
+  InMemPreparedQueryDB
 }
 import de.dnpm.dip.coding.{
   Coding,
@@ -91,26 +91,25 @@ object RDQueryServiceImpl extends Logging
         FakeConnector[Future]
     }
 
-
+/*
   private val db =
     new InMemLocalDB[Future,Monad,RDQueryCriteria,RDPatientRecord](
       RDQueryCriteriaOps.criteriaMatcher(strict = true)
     )
     with RDLocalDB
-
+*/
 
   private[impl] lazy val instance =
     new RDQueryServiceImpl(
       new InMemPreparedQueryDB[Future,Monad,RDQueryCriteria],
-      db,
+      RDLocalDB.instance,
       connector,
       cache
     )
 
   Try(
-    Option(System.getProperty("dnpm.dip.rd.query.data.generate")).get
+   System.getProperty("dnpm.dip.rd.query.data.generate").toInt
   )
-  .map(_.toInt)
   .foreach {
     n =>
 
@@ -134,7 +133,7 @@ object RDQueryServiceImpl extends Logging
 class RDQueryServiceImpl
 (
   val preparedQueryDB: PreparedQueryDB[Future,Monad[Future],RDQueryCriteria,String],
-  val db: RDLocalDB,
+  val db: LocalDB[Future,Monad[Future],RDQueryCriteria,RDPatientRecord],
   val connector: Connector[Future,Monad[Future]],
   val cache: QueryCache[RDQueryCriteria,RDFilters,RDResultSet,RDPatientRecord]
 )
