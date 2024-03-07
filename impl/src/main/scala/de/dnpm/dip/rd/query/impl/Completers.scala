@@ -106,7 +106,6 @@ trait Completers
     compH.asInstanceOf[Completer[Coding[H :+: CNil]]]
 
 
-
 /*
   implicit val diagCategoryCompleter: Completer[Coding[RDDiagnosis.Category]] = 
     Completer.of { 
