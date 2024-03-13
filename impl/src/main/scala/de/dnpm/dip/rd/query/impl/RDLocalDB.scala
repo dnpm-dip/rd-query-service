@@ -65,7 +65,7 @@ object RDLocalDB extends SPILoader[RDLocalDBSPI]
         .getOrElse(
           Option(System.getProperty(rdDataDirProp))
             .orElse(
-              Option(System.getProperty(dataDirProp)).map(dir => s"$dir/RD")
+              Option(System.getProperty(dataDirProp)).map(dir => s"$dir/rd_data")
             ) match {
 
             case Some(dir) =>

@@ -86,7 +86,7 @@ class Tests extends AsyncFlatSpec
 
       variant =
         patRec
-          .ngsReports
+          .getNgsReports
           .head 
           .variants
           .head // Safe: generated variant lists always non-empty

@@ -116,7 +116,7 @@ private trait RDQueryCriteriaOps
 
                   val variants =
                     patientRecord
-                      .ngsReports.toList
+                      .getNgsReports
                       .flatMap(_.variants)
            
                   val matches =

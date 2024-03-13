@@ -31,8 +31,7 @@ trait RDReportingOps
 
       val variants =
         record
-          .ngsReports
-          .toList
+          .getNgsReports
           .flatMap(_.variants)
           .map(DisplayLabel.of(_).value)
           .distinct
