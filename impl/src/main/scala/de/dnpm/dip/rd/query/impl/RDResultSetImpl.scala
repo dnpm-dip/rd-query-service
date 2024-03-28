@@ -22,6 +22,7 @@ import de.dnpm.dip.rd.query.api.{
 
 class RDResultSetImpl(
   val id: Query.Id,
+  val criteria: RDQueryCriteria,
   val results: Seq[(Snapshot[RDPatientRecord],RDQueryCriteria)]
 )
 extends RDResultSet

@@ -23,9 +23,13 @@ import de.dnpm.dip.model.{
   Snapshot,
   Patient
 }
+import de.dnpm.dip.service.Connector
+import de.dnpm.dip.connector.{
+  FakeConnector,
+  HttpConnector
+}
 import de.dnpm.dip.service.query.{
   BaseQueryService,
-  Connector,
   Filters,
   Data,
   LocalDB,
@@ -52,10 +56,6 @@ import de.dnpm.dip.rd.model.{
   RDPatientRecord
 }
 import de.dnpm.dip.rd.query.api._
-import de.dnpm.dip.connector.{
-  FakeConnector,
-  HttpConnector
-}
 
 
 
@@ -91,13 +91,6 @@ object RDQueryServiceImpl extends Logging
         FakeConnector[Future]
     }
 
-/*
-  private val db =
-    new InMemLocalDB[Future,Monad,RDQueryCriteria,RDPatientRecord](
-      RDQueryCriteriaOps.criteriaMatcher(strict = true)
-    )
-    with RDLocalDB
-*/
 
   private[impl] lazy val instance =
     new RDQueryServiceImpl(
@@ -146,7 +139,7 @@ with Completers
 {
 
   override val ResultSetFrom =
-    new RDResultSetImpl(_,_)
+    new RDResultSetImpl(_,_,_)
 
 
   override def DefaultFilter(
