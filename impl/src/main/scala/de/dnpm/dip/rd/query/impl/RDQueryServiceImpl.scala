@@ -77,10 +77,10 @@ object RDQueryServiceImpl extends Logging
 
 
   private lazy val connector =
-    System.getProperty("dnpm.dip.connector.type","peer2peer") match {
-      case HttpConnector.Type(typ) =>
+    System.getProperty(HttpConnector.Type.property,"broker") match {
+      case HttpConnector.Type(t) =>
         HttpConnector(
-          typ,
+          t,
           "/api/rd/peer2peer/",
           PartialFunction.empty
         )
@@ -194,10 +194,6 @@ with Completers
 
   }
 
-
-  override val localSite: Coding[Site] =
-    connector.localSite
-      
     
   override implicit val hpOntology: CodeSystem[HPO] =
     HPO.Ontology

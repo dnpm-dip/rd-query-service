@@ -9,6 +9,7 @@ import org.scalatest.Inspectors._
 import scala.util.Random
 import scala.concurrent.Future
 import cats.Monad
+import de.dnpm.dip.model.Site
 import de.dnpm.dip.coding.{
   Code,
   CodeSystem,
@@ -25,7 +26,10 @@ import de.dnpm.dip.service.query.{
   PreparedQueryDB,
   InMemPreparedQueryDB
 }
-import de.dnpm.dip.connector.FakeConnector
+import de.dnpm.dip.connector.{
+  FakeConnector,
+  HttpConnector
+}
 import de.ekut.tbi.generators.Gen
 import play.api.libs.json.{
   Json,
@@ -39,7 +43,9 @@ class Tests extends AsyncFlatSpec
   import scala.util.chaining._
   import de.dnpm.dip.rd.gens.Generators._
 
-  System.setProperty("dnpm.dip.connector.type","fake")
+
+  System.setProperty(Site.property,"UKx:Musterlingen")
+  System.setProperty(HttpConnector.Type.property,"fake")
   System.setProperty(RDLocalDB.dataGenProp,"0")
 
 

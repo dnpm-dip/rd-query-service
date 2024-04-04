@@ -54,9 +54,6 @@ trait Completers
 
 
 
-  val localSite: Coding[Site]
-
-
   implicit val hpOntology: CodeSystem[HPO]
 
   implicit val hgnc: CodeSystem[HGNC]
@@ -73,7 +70,7 @@ trait Completers
       pat =>
         pat.copy(
           gender       = pat.gender.complete,
-          managingSite = Some(localSite)
+          managingSite = Some(Site.local)
         )
     )
 
