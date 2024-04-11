@@ -44,7 +44,7 @@ object RDLocalDB extends SPILoader[RDLocalDBSPI]
     "dnpm.dip.rd.query.data.dir"
 
   private[impl] val dataDirProp =
-    "dnpm.dip.query.data.dir"
+    "dnpm.dip.data.dir"
 
 
   lazy val instance: LocalDB[Future,Monad[Future],RDQueryCriteria,RDPatientRecord] =
