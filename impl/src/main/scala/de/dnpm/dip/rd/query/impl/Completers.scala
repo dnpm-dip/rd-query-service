@@ -49,9 +49,7 @@ trait Completers
 {
 
   import Completer.syntax._
-
   import scala.util.chaining._ 
-
 
 
   implicit val hpOntology: CodeSystem[HPO]
@@ -64,7 +62,7 @@ trait Completers
 
   implicit val icd10gm: CodeSystemProvider[ICD10GM,Id,Applicative[Id]]
 
-
+/*
   implicit val patientCompleter: Completer[Patient] =
     Completer.of(
       pat =>
@@ -73,7 +71,7 @@ trait Completers
           managingSite = Some(Site.local)
         )
     )
-
+*/
 
   implicit def coproductCodingCompleter[
     H: Coding.System,
@@ -102,29 +100,7 @@ trait Completers
   ): Completer[Coding[H :+: CNil]] =
     compH.asInstanceOf[Completer[Coding[H :+: CNil]]]
 
-
 /*
-  implicit val diagCategoryCompleter: Completer[Coding[RDDiagnosis.Category]] = 
-    Completer.of { 
-      coding =>
-        (
-          coding.system match {
-            case sys if sys == Coding.System[Orphanet].uri =>
-              coding.asInstanceOf[Coding[Orphanet]].complete
-            
-            case sys if sys == Coding.System[OMIM].uri =>
-              coding.asInstanceOf[Coding[OMIM]].complete
-            
-            case sys if sys == Coding.System[ICD10GM].uri =>
-              coding.asInstanceOf[Coding[ICD10GM]].complete
-          }
-        )
-        .asInstanceOf[Coding[RDDiagnosis.Category]]
-
-    }
-*/
-
-
   implicit val diagnosisCompleter: Completer[RDDiagnosis] =
     Completer.of(
       diag =>
@@ -220,7 +196,7 @@ trait Completers
           ngsReports = patRec.ngsReports.complete
         )
     )
-
+*/
 
   implicit val variantCriteriaCompleter: Completer[VariantCriteria] = {
 

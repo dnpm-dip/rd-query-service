@@ -24,6 +24,7 @@ import de.dnpm.dip.model.{
   Patient
 }
 import de.dnpm.dip.service.Connector
+import de.dnpm.dip.service.Data.Save
 import de.dnpm.dip.connector.{
   FakeConnector,
   HttpConnector
@@ -31,7 +32,6 @@ import de.dnpm.dip.connector.{
 import de.dnpm.dip.service.query.{
   BaseQueryService,
   Filters,
-  Data,
   LocalDB,
   Query,
   QueryCache,
@@ -100,26 +100,6 @@ object RDQueryServiceImpl extends Logging
       cache
     )
 
-  Try(
-   System.getProperty("dnpm.dip.rd.query.data.generate").toInt
-  )
-  .foreach {
-    n =>
-
-      import de.ekut.tbi.generators.Gen
-      import de.dnpm.dip.rd.gens.Generators._
-      import scala.util.chaining._
-      import scala.util.Random
-      import scala.concurrent.ExecutionContext.Implicits.global
-
-      implicit val rnd: Random =
-        new Random
-
-      for (i <- 0 until n){
-        instance ! Data.Save(Gen.of[RDPatientRecord].next)
-      }
-  }
-    
 }
 
 
@@ -130,10 +110,7 @@ class RDQueryServiceImpl
   val connector: Connector[Future,Monad[Future]],
   val cache: QueryCache[RDQueryCriteria,RDFilters,RDResultSet,RDPatientRecord]
 )
-extends BaseQueryService[
-  Future,
-  RDConfig
-]
+extends BaseQueryService[Future,RDConfig]
 with RDQueryService
 with Completers
 {
@@ -226,11 +203,5 @@ with Completers
     ICD10GM.Catalogs
       .getInstance[cats.Id]
       .get
-  
-
-  import Completer.syntax._    
-
-  override val preprocess: RDPatientRecord => RDPatientRecord =
-    _.complete
 
 }

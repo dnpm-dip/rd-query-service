@@ -17,9 +17,10 @@ import de.dnpm.dip.coding.{
 }
 import de.dnpm.dip.rd.query.api._
 import de.dnpm.dip.rd.model.RDPatientRecord
+import de.dnpm.dip.rd.model.Completers._
+import de.dnpm.dip.service.Data.Save
 import de.dnpm.dip.service.query.{
   BaseQueryCache,
-  Data,
   Query,
   Querier,
   PreparedQuery,
@@ -42,6 +43,7 @@ class Tests extends AsyncFlatSpec
 
   import scala.util.chaining._
   import de.dnpm.dip.rd.gens.Generators._
+  import de.dnpm.dip.util.Completer.syntax._
 
 
   System.setProperty(Site.property,"UKx:Musterlingen")
@@ -65,6 +67,7 @@ class Tests extends AsyncFlatSpec
 
   val dataSets =
     LazyList.fill(100)(Gen.of[RDPatientRecord].next)
+      .map(_.complete)
 
 
   // Generator for non-empty Query Criteria based on features occurring in a given dataset,
@@ -128,7 +131,7 @@ class Tests extends AsyncFlatSpec
 
     for {
       outcomes <-
-        Future.traverse(dataSets)(service ! Data.Save(_))
+        Future.traverse(dataSets)(service ! Save(_))
     } yield all (outcomes.map(_.isRight)) mustBe true 
     
   }
