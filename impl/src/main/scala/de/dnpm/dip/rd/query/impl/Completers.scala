@@ -62,16 +62,6 @@ trait Completers
 
   implicit val icd10gm: CodeSystemProvider[ICD10GM,Id,Applicative[Id]]
 
-/*
-  implicit val patientCompleter: Completer[Patient] =
-    Completer.of(
-      pat =>
-        pat.copy(
-          gender       = pat.gender.complete,
-          managingSite = Some(Site.local)
-        )
-    )
-*/
 
   implicit def coproductCodingCompleter[
     H: Coding.System,
@@ -100,112 +90,15 @@ trait Completers
   ): Completer[Coding[H :+: CNil]] =
     compH.asInstanceOf[Completer[Coding[H :+: CNil]]]
 
-/*
-  implicit val diagnosisCompleter: Completer[RDDiagnosis] =
-    Completer.of(
-      diag =>
-        diag.copy(
-          categories = diag.categories.complete, 
-          status     = diag.status.complete
-        )
-    )
-
-
-  implicit val hpoTermCompleter: Completer[HPOTerm] =
-    Completer.of(
-      hpo =>
-        hpo.copy(
-          value = hpo.value.complete
-        )
-    )
-
-
-  implicit val acmgCriterionCompleter: Completer[ACMG.Criterion] =
-    Completer.of(
-      acmg =>
-        acmg.copy(
-          value    = acmg.value.complete,
-          modifier = acmg.modifier.complete
-        )
-    )
-
-
-  implicit val smallVariantCompleter: Completer[SmallVariant] =
-    Completer.of(
-      v =>
-        v.copy(
-          genes               = v.genes.complete,
-          acmgClass           = v.acmgClass.complete,
-          acmgCriteria        = v.acmgCriteria.complete,
-          zygosity            = v.zygosity.complete,
-          segregationAnalysis = v.segregationAnalysis.complete,
-          modeOfInheritance   = v.modeOfInheritance.complete,
-          significance        = v.significance.complete,
-        )
-    )
-
-
-  implicit val structuralVariantCompleter: Completer[StructuralVariant] =
-    Completer.of(
-      v =>
-        v.copy(
-          genes               = v.genes.complete,
-          acmgClass           = v.acmgClass.complete,
-          acmgCriteria        = v.acmgCriteria.complete,
-          zygosity            = v.zygosity.complete,
-          segregationAnalysis = v.segregationAnalysis.complete,
-          modeOfInheritance   = v.modeOfInheritance.complete,
-          significance        = v.significance.complete,
-        )
-    )
-
-
-  implicit val copyNumberVariantCompleter: Completer[CopyNumberVariant] =
-    Completer.of(
-      v =>
-        v.copy(
-          genes               = v.genes.complete,
-          acmgClass           = v.acmgClass.complete,
-          acmgCriteria        = v.acmgCriteria.complete,
-          zygosity            = v.zygosity.complete,
-          segregationAnalysis = v.segregationAnalysis.complete,
-          modeOfInheritance   = v.modeOfInheritance.complete,
-          significance        = v.significance.complete,
-        )
-    )
-
-
-  implicit val ngsReportCompleter: Completer[RDNGSReport] =
-    Completer.of(
-      ngs =>
-        ngs.copy(
-          smallVariants      = ngs.smallVariants.complete,
-          structuralVariants = ngs.structuralVariants.complete,
-          copyNumberVariants = ngs.copyNumberVariants.complete
-        )
-    )
-
-
-  implicit val rdPatientRecordCompleter: Completer[RDPatientRecord] =
-    Completer.of(
-      patRec =>
-        patRec.copy(
-          patient    = patRec.patient.complete,
-          diagnosis  = patRec.diagnosis.complete,
-          hpoTerms   = patRec.hpoTerms.complete,
-          ngsReports = patRec.ngsReports.complete
-        )
-    )
-*/
 
   implicit val variantCriteriaCompleter: Completer[VariantCriteria] = {
 
-    val proteinChangeCompleter: Completer[Coding[HGVS]] =
+    val proteinChangeCompleter: Completer[Coding[HGVS.Protein]] =
       Completer.of {
         coding =>
           val threeLetterCode = HGVS.Protein.to3LetterCode(coding.code.value)
           coding.copy(
-            code = Code[HGVS](threeLetterCode),
+            code = Code[HGVS.Protein](threeLetterCode),
             display = coding.display.orElse(Some(threeLetterCode))
           )
       }
@@ -262,8 +155,7 @@ trait Completers
                   CodeSystem[HPO].concepts
 
                 case x =>
-                  CodeSystem[HPO]
-                    .descendantsOf(hpo.code)
+                  CodeSystem[HPO].descendantsOf(hpo.code)
               }
             )
             .map(_.toCoding)

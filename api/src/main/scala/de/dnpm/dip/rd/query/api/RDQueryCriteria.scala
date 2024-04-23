@@ -71,19 +71,10 @@ extends Criteria
 
 final case class VariantCriteria
 (
-//  genes: Option[Set[Coding[HGNC]]],
   gene: Option[Coding[HGNC]],
-  cDNAChange: Option[Coding[HGVS]],
-  gDNAChange: Option[Coding[HGVS]],
-  proteinChange: Option[Coding[HGVS]],
-/*  
-  acmgClass: Option[Set[Coding[Variant.ACMGClass]]],
-  acmgCriteria: Option[Set[Coding[Variant.ACMGCriteria]]],
-  zygosity: Option[Set[Coding[Variant.Zygosity]]],
-  segregationAnalysis: Option[Set[Coding[Variant.SegregationAnalysis]]],
-  modeOfInheritance: Option[Set[Coding[Variant.InheritanceMode]]],
-  significance: Option[Set[Coding[Variant.Significance]]],
-*/
+  cDNAChange: Option[Coding[HGVS.DNA]],
+  gDNAChange: Option[Coding[HGVS.DNA]],
+  proteinChange: Option[Coding[HGVS.Protein]]
 )
 
 object RDQueryCriteria

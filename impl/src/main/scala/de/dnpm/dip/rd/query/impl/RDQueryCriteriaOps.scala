@@ -4,6 +4,7 @@ package de.dnpm.dip.rd.query.impl
 import cats.data.Ior
 import cats.data.Ior.{Left,Right,Both}
 import de.dnpm.dip.coding.Coding
+import de.dnpm.dip.coding.hgvs.HGVS.extensions._
 import de.dnpm.dip.rd.model.RDPatientRecord
 import de.dnpm.dip.rd.query.api.{
   Operator,
@@ -137,6 +138,8 @@ private trait RDQueryCriteriaOps
                             // but whether the query 'code' string is contained as a substring of the occurring code 
                             cDNAChange.map(c => variant.cDNAChange.exists(_.code.value.toLowerCase contains c.code.value.toLowerCase)).getOrElse(true),
                             gDNAChange.map(c => variant.gDNAChange.exists(_.code.value.toLowerCase contains c.code.value.toLowerCase)).getOrElse(true),                          
+//                            cDNAChange.map(c => variant.cDNAChange.exists(_ matches c)).getOrElse(true),
+//                            gDNAChange.map(c => variant.gDNAChange.exists(_ matches c).getOrElse(true),                          
                             proteinChange.map(c => variant.proteinChange.exists(_.code.value.toLowerCase contains c.code.value.toLowerCase)).getOrElse(true),
                           )(
                             strict = true
