@@ -14,3 +14,37 @@ class RDPermissionsSPI extends PermissionsSPI
 }
 
 
+object RDRoles extends Roles
+{
+
+  import RDPermissions._
+
+  val BasicRDQuerier =
+    Role(
+      "BasicRDQuerier",
+      (permissions - ReadPatientRecord),
+      Some("RD: Basis-Such-Rechte (Ergebnis-Zusammenfassungen)")
+    )
+
+  val PrivilegedRDQuerier =
+    Role(
+      "PrivilegedRDQuerier",
+      permissions,
+      Some("RD: Privilegierte Such-Rechte (inkl. Einsicht in Patienten-Akten)")
+    )
+
+  override val roles: Set[Role] =
+    Set(
+      BasicRDQuerier,
+      PrivilegedRDQuerier
+    )
+
+}
+
+
+class RDRolesSPI extends RolesSPI
+{
+  override def getInstance: Roles =
+    RDRoles
+}
+
