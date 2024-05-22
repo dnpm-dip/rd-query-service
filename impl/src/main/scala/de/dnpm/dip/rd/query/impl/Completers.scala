@@ -16,11 +16,13 @@ import de.dnpm.dip.coding.{
   Code,
   Coding,
   CodeSystem,
-  CodeSystemProvider
+  CodeSystemProvider,
+  CodeSystemProviders
 }
 import de.dnpm.dip.coding.hgnc.HGNC
 import de.dnpm.dip.coding.hgvs.HGVS
 import de.dnpm.dip.coding.icd.ICD10GM
+import de.dnpm.dip.service.BaseCompleters
 import de.dnpm.dip.rd.model.{
   ACMG,
   HPO,
@@ -45,20 +47,19 @@ import shapeless.{
 }
 
 
-trait Completers
+trait Completers extends BaseCompleters
 {
 
   import Completer.syntax._
   import scala.util.chaining._ 
 
-
   implicit val hpOntology: CodeSystem[HPO]
 
-  implicit val hgnc: CodeSystem[HGNC]
+  implicit val hgnc: CodeSystemProvider[HGNC,Id,Applicative[Id]]
 
-  implicit val ordo: CodeSystem[Orphanet]
+  implicit val ordo: CodeSystemProvider[Orphanet,Id,Applicative[Id]]
 
-  implicit val omim: CodeSystem[OMIM]
+  implicit val omim: CodeSystemProvider[OMIM,Id,Applicative[Id]]
 
   implicit val icd10gm: CodeSystemProvider[ICD10GM,Id,Applicative[Id]]
 
@@ -126,20 +127,35 @@ trait Completers
 
   }
 
-  
+
+
+  private def expand[T,U >: T](
+    coding: Coding[T],
+    cs: CodeSystem[U]
+  ): Set[Coding[T]] =
+    (cs.concept(coding.code).toSet ++ cs.descendantsOf(coding.code))
+      .map(
+        _.toCoding(coding.system)
+         .asInstanceOf[Coding[T]]
+      )
+
+  private def expand[T,U >: T](
+    coding: Coding[T],
+    csp: CodeSystemProvider[U,Id,Applicative[Id]]
+  ): Set[Coding[T]] =
+    expand(
+      coding,
+      coding.version
+        .flatMap(csp.get)
+        .getOrElse(csp.latest)
+    )
+
+
   val CriteriaExpander: Completer[RDQueryCriteria] = {
 
-    // Completer to include Orpha sub-classes in a query  
-    implicit val orphanetCodingSetCompleter: Completer[Set[Coding[Orphanet]]] =
-      Completer.of {
-        _.flatMap {
-          orpha =>
-            Set(orpha.complete) ++
-              ordo.descendantsOf(orpha.code)
-                .map(_.toCoding)
-        
-        }
-      }
+    implicit val diseaseCategoryExpander: Completer[Set[Coding[RDDiagnosis.Category]]] =
+      descendantExpanderOf[RDDiagnosis.Category]
+
 
     // Completer to include HPO sub-classes in a query  
     implicit val hpoTermSetCompleter: Completer[Set[Coding[HPO]]] =

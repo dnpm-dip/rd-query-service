@@ -179,25 +179,22 @@ with Completers
       .latest
 
 
-  override implicit val ordo: CodeSystem[Orphanet] =
+  override implicit val ordo: CodeSystemProvider[Orphanet,Id,Applicative[Id]] =
     Orphanet.Ordo
       .getInstance[cats.Id]
       .get
-      .latest
 
 
-  override implicit val omim: CodeSystem[OMIM] =
+  override implicit val omim: CodeSystemProvider[OMIM,Id,Applicative[Id]] =
     OMIM.Catalog
       .getInstance[cats.Id]
       .get
-      .latest
 
 
-  override implicit val hgnc: CodeSystem[HGNC] =
+  override implicit val hgnc: CodeSystemProvider[HGNC,Id,Applicative[Id]] =
     HGNC.GeneSet
       .getInstance[cats.Id]
       .get
-      .latest
 
   override implicit val icd10gm: CodeSystemProvider[ICD10GM,Id,Applicative[Id]] =
     ICD10GM.Catalogs
