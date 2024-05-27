@@ -151,10 +151,74 @@ trait Completers extends BaseCompleters
     )
 
 
+  // Custom "expansion" of Coding[RDDiagnosis.Category] required because of the
+  // synonymous relationships among Orphanet and ICD-10:
+  // An Orphanet concept can contain (multiple) references to equivalent ICD-10 concepts.
+  // Thus, for a given Orphanet or ICD-10 coding selected as query criterion,
+  // the corresponding ICD-10 or Orphanet concepts should be included automatically as query criteria
+  private def expandEquivalentCodings(coding: Coding[RDDiagnosis.Category]): Set[Coding[RDDiagnosis.Category]] = {
+
+    import Orphanet.extensions._
+
+    coding.system match {
+
+      // Case "Orphanet": Include descendant codings and also synonymous ICD-10 codings
+      case sys if sys == Coding.System[Orphanet].uri =>
+        
+        val code =
+          coding.asInstanceOf[Coding[Orphanet]].code
+
+        val cs =  
+          coding.version
+            .flatMap(ordo.get)
+            .getOrElse(ordo.latest)
+
+        val concepts =
+          cs.concept(code).toSet ++ cs.descendantsOf(code)
+
+        (
+          concepts.map(_.toCoding) ++
+          concepts
+            .flatMap(_.icd10Codes)
+            .flatMap(expandDescendantCodings(_))
+        )
+        .map(_.asInstanceOf[Coding[RDDiagnosis.Category]])  
+
+      // Case "ICD-10": Include descendant codings and also synonymous Orphanet codings
+      case sys if sys == Coding.System[ICD10GM].uri =>
+        val icd10codings =
+          expandDescendants(coding.asInstanceOf[Coding[ICD10GM]])
+
+        // Combine the ICD-10 descendants coding with Orphanet concepts referencing them
+        (
+          icd10codings ++
+          icd10codings.flatMap(
+            c =>
+              ordo.latest
+                .concepts
+                //TODO: use index of ICD-10 codes to ORDO concepts instead of this inefficient loop
+                .collect {
+                  case cpt if cpt.icd10Codes contains c.code => cpt.toCoding
+                }
+          )
+        )
+        .map(_.asInstanceOf[Coding[RDDiagnosis.Category]])    
+
+      case sys =>
+        Set(
+          coding.asInstanceOf[Coding[OMIM]]
+            .complete
+            .asInstanceOf[Coding[RDDiagnosis.Category]]  
+        )
+    }
+
+  }
+
+
   val CriteriaExpander: Completer[RDQueryCriteria] = {
 
     implicit val diseaseCategoryExpander: Completer[Set[Coding[RDDiagnosis.Category]]] =
-      descendantExpanderOf[RDDiagnosis.Category]
+      Completer.of(_ flatMap expandEquivalentCodings)
 
 
     // Completer to include HPO sub-classes in a query  
