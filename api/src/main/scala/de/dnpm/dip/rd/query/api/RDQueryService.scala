@@ -14,8 +14,7 @@ import de.dnpm.dip.service.query.QueryService
 trait RDQueryService extends QueryService[
   Future,
   Monad[Future],
-  RDConfig,
-  String
+  RDConfig
 ]
 
 
