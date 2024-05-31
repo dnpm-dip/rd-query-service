@@ -21,14 +21,14 @@ object RDRoles extends Roles
 
   val BasicRDQuerier =
     Role(
-      "BasicRDQuerier",
+      "RDQuerierBasic",
       (permissions - ReadPatientRecord),
       Some("RD: Basis-Such-Rechte (Ergebnis-Zusammenfassungen)")
     )
 
   val PrivilegedRDQuerier =
     Role(
-      "PrivilegedRDQuerier",
+      "RDQuerierPrivileged",
       permissions,
       Some("RD: Privilegierte Such-Rechte (inkl. Einsicht in Patienten-Akten)")
     )

@@ -153,11 +153,7 @@ class Tests extends AsyncFlatSpec
           RDQueryCriteria(None,None,None)
         )
 
-      outcome = result.right.value
-
-      _ = outcome mustBe a [Query[_,_]]
-
-      query = outcome.asInstanceOf[Query[RDQueryCriteria,RDFilters]]
+      query = result.value
 
       resultSet <-
         service.resultSet(query.id).map(_.value)
@@ -179,11 +175,7 @@ class Tests extends AsyncFlatSpec
           genCriteria.next
         )
 
-      outcome = result.right.value
-
-      _ = outcome mustBe a [Query[_,_]]
-
-      query = outcome.asInstanceOf[Query[RDQueryCriteria,RDFilters]]
+      query = result.value
 
       resultSet <-
         service.resultSet(query.id)
