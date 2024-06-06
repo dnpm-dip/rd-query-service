@@ -29,11 +29,11 @@ class PermissionTests extends AnyFlatSpec
 
   "Pattern matching of permission names" must "have been successful" in {
 
-    RDPermissions
+    RDQueryPermissions
       .permissions
       .map(_.name)
-      .collect { case RDPermissions(p) => p }
-      .toSet must equal (RDPermissions.values.toSet)
+      .collect { case RDQueryPermissions(p) => p }
+      .toSet must equal (RDQueryPermissions.values.toSet)
 
   }
 

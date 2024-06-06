@@ -2,18 +2,24 @@ package de.dnpm.dip.rd.query.api
 
 
 import de.dnpm.dip.service.auth._
-import de.dnpm.dip.service.query.QueryPermissions
-
-
-object RDPermissions extends QueryPermissions("RD")
-
-class RDPermissionsSPI extends PermissionsSPI
-{
-  override def getInstance: Permissions =
-    RDPermissions
+import de.dnpm.dip.service.query.{
+  QueryPermissions,
+  QueryRoles
 }
 
 
+object RDQueryPermissions extends QueryPermissions("RD")
+
+class RDQueryPermissionsSPI extends PermissionsSPI
+{
+  override def getInstance: Permissions =
+    RDQueryPermissions
+}
+
+
+object RDQueryRoles extends QueryRoles(RDQueryPermissions)
+
+/*
 object RDRoles extends Roles
 {
 
@@ -40,11 +46,11 @@ object RDRoles extends Roles
     )
 
 }
+*/
 
-
-class RDRolesSPI extends RolesSPI
+class RDQueryRolesSPI extends RolesSPI
 {
   override def getInstance: Roles =
-    RDRoles
+    RDQueryRoles
 }
 
