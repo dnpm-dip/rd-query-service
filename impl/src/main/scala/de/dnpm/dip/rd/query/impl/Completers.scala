@@ -151,14 +151,70 @@ trait Completers extends BaseCompleters
     )
 
 
+  // Inverted index of Orphanet-Coding equivalent to a given ICD-10-Code,
+  // used to speed-up the code expansion below, as ORDO contains the inverse
+  // relationships of ICD-10 codes equivalent to a given ORDO concept
+  object OrdoByIcd10Index
+  {
+    import Orphanet.extensions._ 
+ 
+    private val index =
+      scala.collection.mutable.Map.empty[Code[ICD10GM],Set[Coding[Orphanet]]]
+
+    def get(code: Code[ICD10GM]): Set[Coding[Orphanet]] =
+      index.getOrElseUpdate(
+        code,
+        ordo.latest
+          .concepts
+          .collect {
+            case cpt if cpt.icd10Codes contains code => cpt.toCoding
+          }
+          .toSet
+      )
+  
+  }
+  
+/*
+  // Inverted index of Orphanet-Coding equivalent to a given ICD-10-Code,
+  // used to speed-up the code expansion below, as ORDO contains the inverse
+  // relationships of ICD-10 codes equivalent to a given ORDO concept
+  private lazy val ordoByIcd10Index: Map[Code[ICD10GM],Set[Coding[Orphanet]]] = {
+
+    import Orphanet.extensions._ 
+
+    val icd10cs = icd10gm.latest
+
+    ordo.latest
+      .concepts
+      .foldLeft(Map.empty[Code[ICD10GM],Set[Coding[Orphanet]]]){
+        (acc,ordoConcept) =>
+
+          val icd10s =
+            ordoConcept.icd10Codes.flatMap(icd10cs.concept)
+
+          icd10s.foldLeft(acc)(
+            (accPr,icd10) =>
+              accPr.updatedWith(icd10.code)(
+                _.map(_ + ordoConcept)
+                 .orElse(Some(Set(ordoConcept)))
+              )
+          )
+              
+      }
+
+  }
+*/
+
   // Custom "expansion" of Coding[RDDiagnosis.Category] required because of the
   // synonymous relationships among Orphanet and ICD-10:
   // An Orphanet concept can contain (multiple) references to equivalent ICD-10 concepts.
   // Thus, for a given Orphanet or ICD-10 coding selected as query criterion,
   // the corresponding ICD-10 or Orphanet concepts should be included automatically as query criteria
-  private def expandEquivalentCodings(coding: Coding[RDDiagnosis.Category]): Set[Coding[RDDiagnosis.Category]] = {
+  private def expandEquivalentCodings(
+    coding: Coding[RDDiagnosis.Category]
+  ): Set[Coding[RDDiagnosis.Category]] = {
 
-    import Orphanet.extensions._
+    import Orphanet.extensions._ 
 
     coding.system match {
 
@@ -186,21 +242,13 @@ trait Completers extends BaseCompleters
 
       // Case "ICD-10": Include descendant codings and also synonymous Orphanet codings
       case sys if sys == Coding.System[ICD10GM].uri =>
+
         val icd10codings =
           expandDescendants(coding.asInstanceOf[Coding[ICD10GM]])
 
         // Combine the ICD-10 descendants coding with Orphanet concepts referencing them
         (
-          icd10codings ++
-          icd10codings.flatMap(
-            c =>
-              ordo.latest
-                .concepts
-                //TODO: use index of ICD-10 codes to ORDO concepts instead of this inefficient loop
-                .collect {
-                  case cpt if cpt.icd10Codes contains c.code => cpt.toCoding
-                }
-          )
+          icd10codings ++ icd10codings.flatMap(c => OrdoByIcd10Index.get(c.code))
         )
         .map(_.asInstanceOf[Coding[RDDiagnosis.Category]])    
 
