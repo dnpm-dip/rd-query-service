@@ -49,6 +49,14 @@ extends Filters[RDPatientRecord]
 object RDFilters
 {
 
+  lazy val empty: RDFilters =
+    RDFilters(
+      PatientFilter.empty,
+      HPOFilter(None),
+      DiagnosisFilter(None)
+    )
+
+
   implicit val writesHPOFilter: OWrites[HPOFilter] =
     Json.writes[HPOFilter]
 

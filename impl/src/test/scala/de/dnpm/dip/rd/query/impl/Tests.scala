@@ -137,10 +137,10 @@ class Tests extends AsyncFlatSpec
   }
 
 
+  import service.filterToPredicate
+
   val queryMode =
-    Some(
-      Coding(Query.Mode.Local)
-    )
+    Coding(Query.Mode.Local)
 
 
   "Query ResultSet" must "contain the total number of data sets for a query without criteria" in {
@@ -158,7 +158,7 @@ class Tests extends AsyncFlatSpec
       resultSet <-
         service.resultSet(query.id).map(_.value)
 
-    } yield resultSet.summary().patientCount must equal (dataSets.size) 
+    } yield resultSet.summary(RDFilters.empty).patientCount must equal (dataSets.size) 
 
   }
 
@@ -182,7 +182,7 @@ class Tests extends AsyncFlatSpec
           .map(_.value)
 
       patientMatches = 
-        resultSet.patientMatches()
+        resultSet.patientMatches(RDFilters.empty)
 
       _ = all (query.criteria.diagnoses.value.map(_.display)) must be (defined)  
       _ = all (query.criteria.diagnoses.value.map(_.version)) must be (defined)  
@@ -216,7 +216,7 @@ class Tests extends AsyncFlatSpec
 
     for {
       result <-
-        service ? PreparedQuery.Query(Some(querier))
+        service ? PreparedQuery.Filter(Some(querier))
 
       _ = result must not be empty 
 
