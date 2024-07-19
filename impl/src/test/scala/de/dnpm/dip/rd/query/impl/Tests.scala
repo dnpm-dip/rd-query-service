@@ -150,7 +150,7 @@ class Tests extends AsyncFlatSpec
         service ! Query.Submit(
           queryMode,
           None,
-          RDQueryCriteria(None,None,None)
+          None
         )
 
       query = result.value
@@ -172,10 +172,13 @@ class Tests extends AsyncFlatSpec
         service ! Query.Submit(
           queryMode,
           None,
-          genCriteria.next
+          Some(genCriteria.next)
         )
 
       query = result.value
+
+      queryCriteria =
+        query.criteria.value
 
       resultSet <-
         service.resultSet(query.id)
@@ -184,11 +187,11 @@ class Tests extends AsyncFlatSpec
       patientMatches = 
         resultSet.patientMatches(RDFilters.empty)
 
-      _ = all (query.criteria.diagnoses.value.map(_.display)) must be (defined)  
-      _ = all (query.criteria.diagnoses.value.map(_.version)) must be (defined)  
+      _ = all (queryCriteria.diagnoses.value.map(_.display)) must be (defined)  
+      _ = all (queryCriteria.diagnoses.value.map(_.version)) must be (defined)  
 
-      _ = all (query.criteria.hpoTerms.value.map(_.display)) must be (defined)  
-      _ = all (query.criteria.hpoTerms.value.map(_.version)) must be (defined)  
+      _ = all (queryCriteria.hpoTerms.value.map(_.display)) must be (defined)  
+      _ = all (queryCriteria.hpoTerms.value.map(_.version)) must be (defined)  
 
       _ = patientMatches must not be empty
 
@@ -202,7 +205,7 @@ class Tests extends AsyncFlatSpec
         matchingCriteria
       ){ 
         matches =>
-          assert( (query.criteria intersect matches.get).nonEmpty )
+          assert( (queryCriteria intersect matches.value).nonEmpty )
       }
 
   }

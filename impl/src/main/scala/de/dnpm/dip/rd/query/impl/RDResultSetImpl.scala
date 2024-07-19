@@ -29,8 +29,7 @@ import de.dnpm.dip.rd.query.api.{
 
 class RDResultSetImpl(
   val id: Query.Id,
-  val criteria: RDQueryCriteria,
-  val results: Seq[(Snapshot[RDPatientRecord],Option[RDQueryCriteria])]
+  val results: Seq[Query.Match[RDPatientRecord,RDQueryCriteria]]
 )
 extends RDResultSet
 {
@@ -41,23 +40,21 @@ extends RDResultSet
     Diagnostics
   }
 
-  private lazy val records =
-    results.collect { case (Snapshot(record,_),_) => record }
-
 
   override def summary(
     filter: RDPatientRecord => Boolean
   ): RDResultSet.Summary = {
 
+    val records =
+      patientRecords(filter)
+
     val patients =
-      records.collect {
-        case record if filter(record) => record.patient
-      }
+      patientRecords(filter).map(_.patient)
 
     Summary(
       id,
       patients.size,
-      ResultSet.Demographics.on(patients),
+      ResultSet.Demographics.on(records.map(_.patient)),
       Diagnostics(
         Diagnostics.Distributions(
           Distribution.of(
