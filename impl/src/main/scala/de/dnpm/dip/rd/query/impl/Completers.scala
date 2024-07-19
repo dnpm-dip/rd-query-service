@@ -8,6 +8,7 @@ import cats.{
 import cats.data.NonEmptyList
 import de.dnpm.dip.util.Completer
 import de.dnpm.dip.model.{
+  BaseCompleters,
   Patient,
   Observation,
   Site
@@ -22,7 +23,6 @@ import de.dnpm.dip.coding.{
 import de.dnpm.dip.coding.hgnc.HGNC
 import de.dnpm.dip.coding.hgvs.HGVS
 import de.dnpm.dip.coding.icd.ICD10GM
-import de.dnpm.dip.service.BaseCompleters
 import de.dnpm.dip.rd.model.{
   ACMG,
   HPO,
@@ -62,34 +62,6 @@ trait Completers extends BaseCompleters
   implicit val omim: CodeSystemProvider[OMIM,Id,Applicative[Id]]
 
   implicit val icd10gm: CodeSystemProvider[ICD10GM,Id,Applicative[Id]]
-
-
-  implicit def coproductCodingCompleter[
-    H: Coding.System,
-    T <: Coproduct
-  ](
-    implicit
-    compH: Completer[Coding[H]],
-    compT: Completer[Coding[T]]
-  ): Completer[Coding[H :+: T]] =
-    Completer.of { 
-      coding =>
-        (
-          if (coding.system == Coding.System[H].uri)
-            compH(coding.asInstanceOf[Coding[H]])
-          else
-            compT(coding.asInstanceOf[Coding[T]])
-        )
-        .asInstanceOf[Coding[H :+: T]]
-    }
-
-  implicit def terminalCoproductCodingCompleter[
-    H: Coding.System
-  ](
-    implicit
-    compH: Completer[Coding[H]],
-  ): Completer[Coding[H :+: CNil]] =
-    compH.asInstanceOf[Completer[Coding[H :+: CNil]]]
 
 
   implicit val variantCriteriaCompleter: Completer[VariantCriteria] = {

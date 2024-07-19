@@ -143,8 +143,17 @@ with Completers
   }
 
 
+  import RDQueryCriteriaOps._
+
   override val ResultSetFrom =
-    new RDResultSetImpl(_,_,_)
+    (id,criteria,results) =>
+      new RDResultSetImpl(
+        id,
+        criteria,
+        results.map {
+          case (snp,criteria) => snp -> Some(criteria).filterNot(_.isEmpty)
+        }
+      )
 
 
   override def DefaultFilter(

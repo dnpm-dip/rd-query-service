@@ -30,7 +30,7 @@ import de.dnpm.dip.rd.query.api.{
 class RDResultSetImpl(
   val id: Query.Id,
   val criteria: RDQueryCriteria,
-  val results: Seq[(Snapshot[RDPatientRecord],RDQueryCriteria)]
+  val results: Seq[(Snapshot[RDPatientRecord],Option[RDQueryCriteria])]
 )
 extends RDResultSet
 {
@@ -44,39 +44,9 @@ extends RDResultSet
   private lazy val records =
     results.collect { case (Snapshot(record,_),_) => record }
 
-/*
-  import scala.language.implicitConversions
-
-  override implicit def toPredicate(
-    filter: RDFilters
-  ): RDPatientRecord => Boolean = {
-
-    implicit def hpoFilterPredicate(f: HPOFilter): HPOTerm => Boolean =
-      term =>
-        f.value match {
-          case Some(hpos) if hpos.nonEmpty => hpos exists (_.code == term.value.code)
-          case _ => true
-        }
-
-    implicit def diagnosisFilterPredicate(f: DiagnosisFilter): RDDiagnosis => Boolean =
-      diag =>
-        f.category match {
-           case Some(orphas) if orphas.nonEmpty => diag.categories exists (c => orphas exists (_.code == c.code))
-           case _ => true
-        }
-
-    record =>
-      filter.patientFilter(record.patient) &&
-      record.hpoTerms.exists(filter.hpoFilter) &&
-      filter.diagnosisFilter(record.diagnosis)
-
-  }
-*/
-
 
   override def summary(
     filter: RDPatientRecord => Boolean
-//    filter: RDFilters
   ): RDResultSet.Summary = {
 
     val patients =
