@@ -74,4 +74,30 @@ extends RDResultSet
 
   }
 
+  override def diagnostics(
+    filter: RDPatientRecord => Boolean
+  ): RDResultSet.Diagnostics = {
+
+    val records =
+      patientRecords(filter)
+
+    Diagnostics(
+      Diagnostics.Distributions(
+        Distribution.of(
+          records.flatMap(
+            _.diagnosis.categories.toList
+          )
+        ),
+        Distribution.of(
+          records.flatMap(
+            _.hpoTerms.map(_.value).toList
+          )
+        )
+      ),
+      distributionsByVariant(records)
+    )
+
+  }
+
+
 }
