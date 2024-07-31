@@ -35,48 +35,12 @@ extends RDResultSet
 {
 
   import RDReportingOps._
-  import RDResultSet.{
-    Summary,
-    Diagnostics
-  }
+  import RDResultSet.Diagnostics
 
-
-  override def summary(
-    filter: RDPatientRecord => Boolean
-  ): RDResultSet.Summary = {
-
-    val records =
-      patientRecords(filter)
-
-    val patients =
-      patientRecords(filter).map(_.patient)
-
-    Summary(
-      id,
-      patients.size,
-      ResultSet.Demographics.on(records.map(_.patient)),
-      Diagnostics(
-        Diagnostics.Distributions(
-          Distribution.of(
-            records.flatMap(
-              _.diagnosis.categories.toList
-            )
-          ),
-          Distribution.of(
-            records.flatMap(
-              _.hpoTerms.map(_.value).toList
-            )
-          )
-        ),
-        distributionsByVariant(records)
-      )
-    )
-
-  }
 
   override def diagnostics(
     filter: RDPatientRecord => Boolean
-  ): RDResultSet.Diagnostics = {
+  ): Diagnostics = {
 
     val records =
       patientRecords(filter)
@@ -98,6 +62,5 @@ extends RDResultSet
     )
 
   }
-
 
 }

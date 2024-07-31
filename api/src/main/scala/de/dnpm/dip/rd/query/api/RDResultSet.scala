@@ -30,7 +30,6 @@ import play.api.libs.json.{
 
 trait RDResultSet extends ResultSet[RDPatientRecord,RDQueryCriteria]
 {
-  type SummaryType = RDResultSet.Summary
 
   def diagnostics(
     filter: RDPatientRecord => Boolean = _ => true
@@ -53,6 +52,9 @@ object RDResultSet
     implicit val writesDistributions: OWrites[Distributions] =
       Json.writes[Distributions]
 
+    implicit val writesDiagnostics: OWrites[Diagnostics] =
+      Json.writes[Diagnostics]
+
   }
 
   final case class Diagnostics
@@ -60,23 +62,6 @@ object RDResultSet
     overallDistributions: Diagnostics.Distributions,
     distributionsByVariant: Seq[Entry[String,Diagnostics.Distributions]]
   )
-
-
-  final case class Summary
-  (
-    id: Query.Id,
-    patientCount: Int,
-    demographics: Demographics,
-    diagnostics: Diagnostics
-  )
-  extends ResultSet.Summary
-
-
-  implicit val writesDiagnostics: OWrites[Diagnostics] =
-    Json.writes[Diagnostics]
-
-  implicit val writesSummary: OWrites[Summary] =
-    Json.writes[Summary]
 
 }
 
