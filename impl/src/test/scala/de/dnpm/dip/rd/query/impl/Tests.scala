@@ -18,7 +18,6 @@ import de.dnpm.dip.coding.{
 import de.dnpm.dip.rd.query.api._
 import de.dnpm.dip.rd.model.RDPatientRecord
 import de.dnpm.dip.rd.model.Completers._
-import de.dnpm.dip.service.Data.Save
 import de.dnpm.dip.service.query.{
   BaseQueryCache,
   Query,
@@ -27,6 +26,7 @@ import de.dnpm.dip.service.query.{
   PreparedQueryDB,
   InMemPreparedQueryDB
 }
+import de.dnpm.dip.service.query.QueryService.Save
 import de.dnpm.dip.connector.{
   FakeConnector,
   HttpConnector
