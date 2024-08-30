@@ -114,6 +114,7 @@ with RDQueryService
 with Completers
 {
 
+/*  
   import scala.language.implicitConversions
 
   override implicit def filterToPredicate(
@@ -140,19 +141,6 @@ with Completers
       filter.diagnosisFilter(record.diagnosis)
 
   }
-
-/*
-  import RDQueryCriteriaOps._
-
-  override val ResultSetFrom =
-    (id,criteria,results) =>
-      new RDResultSetImpl(
-        id,
-        criteria,
-        results.map {
-          case (snp,criteria) => snp -> Some(criteria).filterNot(_.isEmpty)
-        }
-      )
 */
 
   override val ResultSetFrom =

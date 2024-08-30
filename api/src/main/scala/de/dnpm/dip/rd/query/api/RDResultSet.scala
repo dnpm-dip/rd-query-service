@@ -30,9 +30,10 @@ import play.api.libs.json.{
 
 trait RDResultSet extends ResultSet[RDPatientRecord,RDQueryCriteria]
 {
+  type Filter = RDFilters
 
   def diagnostics(
-    filter: RDPatientRecord => Boolean = _ => true
+    filter: RDFilters
   ): RDResultSet.Diagnostics
 
 }

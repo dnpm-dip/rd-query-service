@@ -12,7 +12,7 @@ sealed trait RDConfig extends UseCaseConfig
 
   type Criteria = RDQueryCriteria
 
-  type Filter = RDFilters
+//  type Filter = RDFilters
 
   type Results = RDResultSet
 }

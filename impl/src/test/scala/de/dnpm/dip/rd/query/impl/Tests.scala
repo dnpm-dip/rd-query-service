@@ -137,8 +137,6 @@ class Tests extends AsyncFlatSpec
   }
 
 
-  import service.filterToPredicate
-
   val queryMode =
     Coding(Query.Mode.Local)
 
@@ -158,7 +156,7 @@ class Tests extends AsyncFlatSpec
       resultSet <-
         service.resultSet(query.id).map(_.value)
 
-    } yield resultSet.demographics().patientCount must equal (dataSets.size) 
+    } yield resultSet.demographics(RDFilters.empty).patientCount must equal (dataSets.size) 
 
   }
 

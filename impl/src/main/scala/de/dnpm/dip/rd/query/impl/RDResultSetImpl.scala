@@ -38,8 +38,38 @@ extends RDResultSet
   import RDResultSet.Diagnostics
 
 
+  import scala.language.implicitConversions
+
+  override implicit def toPredicate[F >: RDFilters](
+    f: F
+  ): RDPatientRecord => Boolean = {
+
+    val filter = f.asInstanceOf[RDFilters]
+
+    implicit def hpoFilterPredicate(f: HPOFilter): HPOTerm => Boolean =
+      term =>
+        f.value match {
+          case Some(hpos) if hpos.nonEmpty => hpos exists (_.code == term.value.code)
+          case _ => true
+        }
+
+    implicit def diagnosisFilterPredicate(f: DiagnosisFilter): RDDiagnosis => Boolean =
+      diag =>
+        f.category match {
+           case Some(orphas) if orphas.nonEmpty => diag.categories exists (c => orphas exists (_.code == c.code))
+           case _ => true
+        }
+
+    record =>
+      filter.patientFilter(record.patient) &&
+      record.hpoTerms.exists(filter.hpoFilter) &&
+      filter.diagnosisFilter(record.diagnosis)
+
+  }
+
+
   override def diagnostics(
-    filter: RDPatientRecord => Boolean
+    filter: RDFilters
   ): Diagnostics = {
 
     val records =
