@@ -114,37 +114,14 @@ with RDQueryService
 with Completers
 {
 
-/*  
-  import scala.language.implicitConversions
 
-  override implicit def filterToPredicate(
-    filter: RDFilters
-  ): RDPatientRecord => Boolean = {
-
-    implicit def hpoFilterPredicate(f: HPOFilter): HPOTerm => Boolean =
-      term =>
-        f.value match {
-          case Some(hpos) if hpos.nonEmpty => hpos exists (_.code == term.value.code)
-          case _ => true
-        }
-
-    implicit def diagnosisFilterPredicate(f: DiagnosisFilter): RDDiagnosis => Boolean =
-      diag =>
-        f.category match {
-           case Some(orphas) if orphas.nonEmpty => diag.categories exists (c => orphas exists (_.code == c.code))
-           case _ => true
-        }
-
-    record =>
-      filter.patientFilter(record.patient) &&
-      record.hpoTerms.exists(filter.hpoFilter) &&
-      filter.diagnosisFilter(record.diagnosis)
-
-  }
-*/
-
-  override val ResultSetFrom =
-    new RDResultSetImpl(_,_)
+//  override val ResultSetFrom =
+//    new RDResultSetImpl(_,_)
+  override def ResultSetFrom(
+    query: Query[RDQueryCriteria,RDFilters],
+    results: Seq[Query.Match[RDPatientRecord,RDQueryCriteria]]
+  ) =
+    new RDResultSetImpl(query.id,results)
 
 
   override def DefaultFilter(
