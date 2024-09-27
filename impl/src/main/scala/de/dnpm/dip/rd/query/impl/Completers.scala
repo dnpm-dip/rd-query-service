@@ -100,7 +100,7 @@ trait Completers extends BaseCompleters
   }
 
 
-
+  @deprecated
   private def expand[T,U >: T](
     coding: Coding[T],
     cs: CodeSystem[U]
@@ -111,6 +111,7 @@ trait Completers extends BaseCompleters
          .asInstanceOf[Coding[T]]
       )
 
+  @deprecated
   private def expand[T,U >: T](
     coding: Coding[T],
     csp: CodeSystemProvider[U,Id,Applicative[Id]]
@@ -182,6 +183,7 @@ trait Completers extends BaseCompleters
   // An Orphanet concept can contain (multiple) references to equivalent ICD-10 concepts.
   // Thus, for a given Orphanet or ICD-10 coding selected as query criterion,
   // the corresponding ICD-10 or Orphanet concepts should be included automatically as query criteria
+  @deprecated
   private def expandEquivalentCodings(
     coding: Coding[RDDiagnosis.Category]
   ): Set[Coding[RDDiagnosis.Category]] = {
@@ -235,6 +237,7 @@ trait Completers extends BaseCompleters
   }
 
 
+  @deprecated
   val CriteriaExpander: Completer[RDQueryCriteria] = {
 
     implicit val diseaseCategoryExpander: Completer[Set[Coding[RDDiagnosis.Category]]] =
