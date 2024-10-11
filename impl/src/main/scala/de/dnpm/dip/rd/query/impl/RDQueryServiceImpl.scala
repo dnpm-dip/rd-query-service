@@ -115,12 +115,10 @@ with Completers
 {
 
 
-//  override val ResultSetFrom =
-//    new RDResultSetImpl(_,_)
   override def ResultSetFrom(
     query: Query[RDQueryCriteria,RDFilters],
     results: Seq[Query.Match[RDPatientRecord,RDQueryCriteria]]
-  ) =
+  ): RDResultSet =
     new RDResultSetImpl(query.id,results)
 
 

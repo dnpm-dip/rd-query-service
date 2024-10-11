@@ -68,6 +68,29 @@ extends RDResultSet
   }
 
 
+  override lazy val defaultFilter: RDFilters = {
+
+    val records =
+      patientRecords(_ => true)
+
+    RDFilters(
+      PatientFilter.on(records),
+      HPOFilter(
+        Option(
+          records.flatMap(_.hpoTerms.map(_.value).toList)
+            .toSet
+        )
+      ),
+      DiagnosisFilter(
+        Option(
+          records.flatMap(_.diagnosis.categories.toList)
+            .toSet
+        )
+      )
+    )
+  }
+
+
   override def diagnostics(
     filter: RDFilters
   ): Diagnostics = {
