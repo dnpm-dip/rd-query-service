@@ -44,6 +44,9 @@ extends RDResultSet
     f: F
   ): RDPatientRecord => Boolean = {
 
+    import PatientFilter.Extensions._
+
+
     val filter = f.asInstanceOf[RDFilters]
 
     implicit def hpoFilterPredicate(f: HPOFilter): HPOTerm => Boolean =
