@@ -65,8 +65,8 @@ extends RDResultSet
 
     record =>
       filter.patient(record.patient) &&
-      record.hpoTerms.exists(filter.hpoTerms) &&
-      filter.diagnoses(record.diagnosis)
+      record.hpoTerms.exists(filter.hpo) &&
+      filter.diagnosis(record.diagnosis)
 
   }
 

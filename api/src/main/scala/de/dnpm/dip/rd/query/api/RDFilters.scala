@@ -41,8 +41,8 @@ final case class DiagnosisFilter
 final case class RDFilters
 (
   patient: PatientFilter,
-  hpoTerms: HPOFilter,
-  diagnoses: DiagnosisFilter
+  hpo: HPOFilter,
+  diagnosis: DiagnosisFilter
 )
 extends Filters[RDPatientRecord]
 
