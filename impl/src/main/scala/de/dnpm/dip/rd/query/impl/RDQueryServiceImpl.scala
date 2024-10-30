@@ -72,7 +72,7 @@ object RDQueryServiceImpl extends Logging
 {
 
   private val cache =
-    new BaseQueryCache[RDQueryCriteria,RDFilters,RDResultSet,RDPatientRecord]
+    new BaseQueryCache[RDQueryCriteria,RDResultSet,RDPatientRecord]
 
 
   private lazy val connector =
@@ -107,7 +107,7 @@ class RDQueryServiceImpl
   val preparedQueryDB: PreparedQueryDB[Future,Monad[Future],RDQueryCriteria,String],
   val db: LocalDB[Future,Monad[Future],RDQueryCriteria,RDPatientRecord],
   val connector: Connector[Future,Monad[Future]],
-  val cache: QueryCache[RDQueryCriteria,RDFilters,RDResultSet,RDPatientRecord]
+  val cache: QueryCache[RDQueryCriteria,RDResultSet,RDPatientRecord]
 )
 extends BaseQueryService[Future,RDConfig]
 with RDQueryService
@@ -116,12 +116,12 @@ with Completers
 
 
   override def ResultSetFrom(
-    query: Query[RDQueryCriteria,RDFilters],
+    query: Query[RDQueryCriteria],
     results: Seq[Query.Match[RDPatientRecord,RDQueryCriteria]]
   ): RDResultSet =
     new RDResultSetImpl(query.id,results)
 
-
+/*
   override def DefaultFilter(
     results: Seq[Snapshot[RDPatientRecord]]
   ): RDFilters = {
@@ -145,7 +145,7 @@ with Completers
       )
     )
   }
-
+*/
 
   override implicit val hpOntology: CodeSystem[HPO] =
     HPO.Ontology
