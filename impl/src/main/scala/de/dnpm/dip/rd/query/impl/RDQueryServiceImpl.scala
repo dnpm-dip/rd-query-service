@@ -26,7 +26,8 @@ import de.dnpm.dip.model.{
 import de.dnpm.dip.service.Connector
 import de.dnpm.dip.connector.{
   FakeConnector,
-  HttpConnector
+  HttpConnector,
+  HttpMethod
 }
 import de.dnpm.dip.service.query.{
   BaseQueryService,
@@ -36,6 +37,8 @@ import de.dnpm.dip.service.query.{
   QueryCache,
   BaseQueryCache,
   PatientFilter,
+  PeerToPeerQuery,
+  PatientRecordRequest,
   PreparedQueryDB,
   InMemPreparedQueryDB
 }
@@ -71,17 +74,24 @@ extends RDQueryServiceProvider
 object RDQueryServiceImpl extends Logging
 {
 
+  import HttpMethod._
+
   private val cache =
     new BaseQueryCache[RDQueryCriteria,RDResultSet,RDPatientRecord]
-
 
   private lazy val connector =
     System.getProperty(HttpConnector.Type.property,"broker") match {
       case HttpConnector.Type(t) =>
         HttpConnector(
           t,
-          "/api/rd/peer2peer/",
-          PartialFunction.empty
+          {
+            case req: PeerToPeerQuery[_,_] =>
+              (POST, "/api/rd/peer2peer/query", Map.empty)
+
+            case req: PatientRecordRequest[_] =>
+              (GET, "/api/rd/peer2peer/patient-record", Map.empty)
+          }
+
         )
 
       case _ => 
@@ -121,31 +131,6 @@ with Completers
   ): RDResultSet =
     new RDResultSetImpl(query.id,results)
 
-/*
-  override def DefaultFilter(
-    results: Seq[Snapshot[RDPatientRecord]]
-  ): RDFilters = {
-
-    val records =
-      results.map(_.data)
-
-    RDFilters(
-      PatientFilter.on(records),
-      HPOFilter(
-        Option(
-          records.flatMap(_.hpoTerms.map(_.value).toList)
-            .toSet
-        )
-      ),
-      DiagnosisFilter(
-        Option(
-          records.flatMap(_.diagnosis.categories.toList)
-            .toSet
-        )
-      )
-    )
-  }
-*/
 
   override implicit val hpOntology: CodeSystem[HPO] =
     HPO.Ontology
