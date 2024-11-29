@@ -1,16 +1,9 @@
 package de.dnpm.dip.rd.query.impl
 
 
-import de.dnpm.dip.model.{
-  Id,
-  Patient,
-  Snapshot
-}
 import de.dnpm.dip.service.query.{
   PatientFilter,
-  PatientMatch,
   Query,
-  ResultSet,
   Distribution
 }
 import de.dnpm.dip.rd.model.{
@@ -37,8 +30,6 @@ extends RDResultSet
   import RDReportingOps._
   import RDResultSet.Diagnostics
 
-
-  import scala.language.implicitConversions
 
   override implicit def toPredicate[F >: RDFilters](
     f: F

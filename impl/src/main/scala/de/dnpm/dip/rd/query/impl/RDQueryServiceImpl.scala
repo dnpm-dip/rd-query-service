@@ -1,28 +1,13 @@
 package de.dnpm.dip.rd.query.impl 
 
 
-
-import java.io.File
 import scala.concurrent.Future
-import scala.util.{
-  Try,
-  Failure
-}
 import cats.{
   Applicative,
   Id,
   Monad
 }
-import de.dnpm.dip.util.{
-  Completer,
-  Logging
-}
-import de.dnpm.dip.model.{
-  ClosedInterval,
-  Site,
-  Snapshot,
-  Patient
-}
+import de.dnpm.dip.util.Logging
 import de.dnpm.dip.service.Connector
 import de.dnpm.dip.connector.{
   FakeConnector,
@@ -31,19 +16,16 @@ import de.dnpm.dip.connector.{
 }
 import de.dnpm.dip.service.query.{
   BaseQueryService,
-  Filters,
   LocalDB,
   Query,
   QueryCache,
   BaseQueryCache,
-  PatientFilter,
   PeerToPeerQuery,
   PatientRecordRequest,
   PreparedQueryDB,
   InMemPreparedQueryDB
 }
 import de.dnpm.dip.coding.{
-  Coding,
   CodeSystem,
   CodeSystemProvider
 }
@@ -51,10 +33,8 @@ import de.dnpm.dip.coding.hgnc.HGNC
 import de.dnpm.dip.coding.icd.ICD10GM
 import de.dnpm.dip.rd.model.{
   HPO,
-  HPOTerm,
   OMIM,
   Orphanet,
-  RDDiagnosis,
   RDPatientRecord
 }
 import de.dnpm.dip.rd.query.api._
@@ -85,10 +65,10 @@ object RDQueryServiceImpl extends Logging
         HttpConnector(
           t,
           {
-            case req: PeerToPeerQuery[_,_] =>
+            case _: PeerToPeerQuery[_,_] =>
               (POST, "/api/rd/peer2peer/query", Map.empty)
 
-            case req: PatientRecordRequest[_] =>
+            case _: PatientRecordRequest[_] =>
               (GET, "/api/rd/peer2peer/patient-record", Map.empty)
           }
 

@@ -1,16 +1,9 @@
 package de.dnpm.dip.rd.query.impl
 
 
-//import cats.data.Ior
-//import cats.data.Ior.{Left,Right,Both}
-import de.dnpm.dip.coding.Coding
-//import de.dnpm.dip.coding.hgvs.HGVS.extensions._
 import de.dnpm.dip.rd.model.RDPatientRecord
 import de.dnpm.dip.rd.query.api.{
-  Operator,
   RDQueryCriteria,
-  DiagnosisCriteria,
-  HPOCriteria,
   VariantCriteria
 }
 

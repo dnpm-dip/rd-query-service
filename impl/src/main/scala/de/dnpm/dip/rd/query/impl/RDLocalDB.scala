@@ -3,15 +3,8 @@ package de.dnpm.dip.rd.query.impl
 
 import java.io.File
 import scala.util.Try
-import scala.util.chaining._
 import scala.concurrent.Future
 import cats.Monad
-import de.dnpm.dip.model.{
-  Id,
-  Patient,
-  Snapshot,
-  Site
-}
 import de.dnpm.dip.service.query.{
   LocalDB,
   FSBackedLocalDB,

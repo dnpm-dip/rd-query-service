@@ -5,45 +5,26 @@ import cats.{
   Applicative,
   Id
 }
-import cats.data.NonEmptyList
 import de.dnpm.dip.util.Completer
-import de.dnpm.dip.model.{
-  BaseCompleters,
-  Patient,
-  Observation,
-  Site
-}
+import de.dnpm.dip.model.BaseCompleters
 import de.dnpm.dip.coding.{
   Code,
   Coding,
   CodeSystem,
   CodeSystemProvider,
-  CodeSystemProviders
 }
 import de.dnpm.dip.coding.hgnc.HGNC
 import de.dnpm.dip.coding.hgvs.HGVS
 import de.dnpm.dip.coding.icd.ICD10GM
 import de.dnpm.dip.rd.model.{
-  ACMG,
   HPO,
-  HPOTerm,
   OMIM,
   Orphanet,
   RDDiagnosis,
-  RDNGSReport,
-  RDPatientRecord,
-  SmallVariant,
-  CopyNumberVariant,
-  StructuralVariant
 }
 import de.dnpm.dip.rd.query.api.{
   VariantCriteria,
   RDQueryCriteria
-}
-import shapeless.{
-  Coproduct,
-  :+:,
-  CNil
 }
 
 
@@ -51,7 +32,7 @@ trait Completers extends BaseCompleters
 {
 
   import Completer.syntax._
-  import scala.util.chaining._ 
+
 
   implicit val hpOntology: CodeSystem[HPO]
 
@@ -100,7 +81,8 @@ trait Completers extends BaseCompleters
   }
 
 
-  @deprecated
+/*
+  @deprecated("-","")
   private def expand[T,U >: T](
     coding: Coding[T],
     cs: CodeSystem[U]
@@ -111,7 +93,7 @@ trait Completers extends BaseCompleters
          .asInstanceOf[Coding[T]]
       )
 
-  @deprecated
+  @deprecated("-","")
   private def expand[T,U >: T](
     coding: Coding[T],
     csp: CodeSystemProvider[U,Id,Applicative[Id]]
@@ -122,7 +104,7 @@ trait Completers extends BaseCompleters
         .flatMap(csp.get)
         .getOrElse(csp.latest)
     )
-
+*/
 
   // Inverted index of Orphanet-Coding equivalent to a given ICD-10-Code,
   // used to speed-up the code expansion below, as ORDO contains the inverse
@@ -183,7 +165,7 @@ trait Completers extends BaseCompleters
   // An Orphanet concept can contain (multiple) references to equivalent ICD-10 concepts.
   // Thus, for a given Orphanet or ICD-10 coding selected as query criterion,
   // the corresponding ICD-10 or Orphanet concepts should be included automatically as query criteria
-  @deprecated
+  @deprecated("-","")
   private def expandEquivalentCodings(
     coding: Coding[RDDiagnosis.Category]
   ): Set[Coding[RDDiagnosis.Category]] = {
@@ -226,7 +208,7 @@ trait Completers extends BaseCompleters
         )
         .map(_.asInstanceOf[Coding[RDDiagnosis.Category]])    
 
-      case sys =>
+      case _ =>
         Set(
           coding.asInstanceOf[Coding[OMIM]]
             .complete
@@ -237,7 +219,7 @@ trait Completers extends BaseCompleters
   }
 
 
-  @deprecated
+  @deprecated("-","")
   val CriteriaExpander: Completer[RDQueryCriteria] = {
 
     implicit val diseaseCategoryExpander: Completer[Set[Coding[RDDiagnosis.Category]]] =
@@ -254,11 +236,9 @@ trait Completers extends BaseCompleters
                 // Little optimization:
                 // Given that HP:0000001 is the root class of HPO,
                 // skip descendants resolution in this case and directly use all concepts
-                case "HP:0000001" =>
-                  CodeSystem[HPO].concepts
+                case "HP:0000001" => CodeSystem[HPO].concepts
 
-                case x =>
-                  CodeSystem[HPO].descendantsOf(hpo.code)
+                case _            => CodeSystem[HPO].descendantsOf(hpo.code)
               }
             )
             .map(_.toCoding)

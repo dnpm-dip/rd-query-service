@@ -3,20 +3,11 @@ package de.dnpm.dip.rd.query.api
 
 
 import de.dnpm.dip.coding.Coding
-import de.dnpm.dip.coding.hgvs.HGVS
-import de.dnpm.dip.model.{
-  Gender,
-  Interval,
-  Site,
-}
 import de.dnpm.dip.service.query.{
-  PatientFilter,
-  Query,
   ResultSet,
   Entry,
   Distribution
 }
-import ResultSet.Demographics
 import de.dnpm.dip.rd.model.{
   HPO,
   RDDiagnosis,

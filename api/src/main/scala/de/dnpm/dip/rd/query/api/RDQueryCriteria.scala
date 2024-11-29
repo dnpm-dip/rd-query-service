@@ -7,12 +7,6 @@ import de.dnpm.dip.coding.hgvs.HGVS
 import de.dnpm.dip.rd.model.{
   RDDiagnosis,
   HPO,
-  Variant,
-  RDPatientRecord
-}
-import de.dnpm.dip.service.query.{
-  PatientFilter,
-  Query,
 }
 import play.api.libs.json.{
   Json,
@@ -42,16 +36,6 @@ final case class RDQueryCriteria
   variants: Option[Set[VariantCriteria]]
 )
 
-/*
-final case class RDQueryCriteria
-(
-  operator: Option[Operator.Value],
-  diagnosisCriteria: Option[DiagnosisCriteria],
-  hpoCriteria: Option[HPOCriteria],
-  variantCriteria: Option[Set[VariantCriteria]]
-)
-extends Criteria
-*/
 
 
 final case class DiagnosisCriteria

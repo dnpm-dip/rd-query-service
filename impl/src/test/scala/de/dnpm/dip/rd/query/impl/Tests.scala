@@ -8,40 +8,24 @@ import org.scalatest.EitherValues._
 import org.scalatest.Inspectors._
 import scala.util.Random
 import scala.concurrent.Future
-import cats.Monad
 import de.dnpm.dip.model.Site
-import de.dnpm.dip.coding.{
-  Code,
-  CodeSystem,
-  Coding
-}
+import de.dnpm.dip.coding.Coding
 import de.dnpm.dip.rd.query.api._
 import de.dnpm.dip.rd.model.RDPatientRecord
 import de.dnpm.dip.rd.model.Completers._
 import de.dnpm.dip.service.query.{
-  BaseQueryCache,
   Query,
   Querier,
   PreparedQuery,
-  PreparedQueryDB,
-  InMemPreparedQueryDB
 }
 import de.dnpm.dip.service.query.QueryService.Save
-import de.dnpm.dip.connector.{
-  FakeConnector,
-  HttpConnector
-}
+import de.dnpm.dip.connector.HttpConnector
 import de.ekut.tbi.generators.Gen
-import play.api.libs.json.{
-  Json,
-  Writes
-}
 
 
 class Tests extends AsyncFlatSpec
 {
 
-  import scala.util.chaining._
   import de.dnpm.dip.rd.gens.Generators._
   import de.dnpm.dip.util.Completer.syntax._
 
@@ -114,12 +98,6 @@ class Tests extends AsyncFlatSpec
       Some(Set(variantCriteria))
     )
 
-
-
-  private def printJson[T: Writes](t: T) =
-    t.pipe(Json.toJson(_))
-     .pipe(Json.prettyPrint)
-     .tap(println)
 
 
   "SPI" must "have worked" in {

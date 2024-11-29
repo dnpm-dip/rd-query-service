@@ -6,14 +6,6 @@ import play.api.libs.json.{
   OWrites
 }
 import de.dnpm.dip.coding.Coding
-import de.dnpm.dip.model.{
-  Age,
-  Interval,
-  Gender,
-  Patient,
-  VitalStatus,
-  Site
-}
 import de.dnpm.dip.service.query.{
   Filters,
   PatientFilter
@@ -22,7 +14,6 @@ import de.dnpm.dip.rd.model.{
   RDDiagnosis,
   RDPatientRecord,
   HPO,
-  HPOTerm,
 }
 
 

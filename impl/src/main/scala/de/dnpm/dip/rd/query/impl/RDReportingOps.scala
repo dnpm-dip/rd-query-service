@@ -10,8 +10,7 @@ import de.dnpm.dip.service.query.{
 import de.dnpm.dip.rd.model.{
   HPO,
   RDDiagnosis,
-  RDPatientRecord,
-  Variant
+  RDPatientRecord
 }
 import de.dnpm.dip.rd.query.api.RDResultSet.Diagnostics.Distributions
 
