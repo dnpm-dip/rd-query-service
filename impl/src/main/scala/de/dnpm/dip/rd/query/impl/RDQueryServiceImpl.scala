@@ -22,8 +22,7 @@ import de.dnpm.dip.service.query.{
   BaseQueryCache,
   PeerToPeerQuery,
   PatientRecordRequest,
-  PreparedQueryDB,
-  InMemPreparedQueryDB
+  PreparedQueryDB
 }
 import de.dnpm.dip.coding.{
   CodeSystem,
@@ -83,7 +82,7 @@ object RDQueryServiceImpl extends Logging
 
   private[impl] lazy val instance =
     new RDQueryServiceImpl(
-      new InMemPreparedQueryDB[Future,Monad,RDQueryCriteria],
+      RDPreparedQueryDB.instance,
       RDLocalDB.instance,
       connector,
       cache
