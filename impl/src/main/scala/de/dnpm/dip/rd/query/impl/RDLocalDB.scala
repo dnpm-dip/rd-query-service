@@ -67,7 +67,7 @@ object RDLocalDB extends SPILoader[RDLocalDBSPI]
 
                 implicit val rnd: Random = new Random
 
-                for (i <- 0 until n){
+                for (_ <- 0 until n){
                   db.save(Gen.of[RDPatientRecord].next.complete)
                 }
               }

@@ -72,7 +72,7 @@ private trait RDQueryCriteriaOps
               diagnosisCriteria match {
                 case Some(crit) if crit.nonEmpty => 
                   val matches =
-                    crit intersect patientRecord.diagnosis.categories.toList.toSet
+                    crit intersect patientRecord.diagnoses.flatMap(_.codes).toList.toSet
 
                   Some(matches).filter(_.nonEmpty) -> (crit intersect matches).nonEmpty
 
@@ -128,9 +128,9 @@ private trait RDQueryCriteriaOps
                             gene.map(c => variant.genes.exists(_.exists(_.code == c.code))).getOrElse(true),
                             // DNA and Protein change checks not based on code equality,
                             // but whether the query 'code' string is contained as a substring of the occurring code 
-                            cDNAChange.map(c => variant.cDNAChange.exists(_.code.value.toLowerCase contains c.code.value.toLowerCase)).getOrElse(true),
-                            gDNAChange.map(c => variant.gDNAChange.exists(_.code.value.toLowerCase contains c.code.value.toLowerCase)).getOrElse(true),                          
-                            proteinChange.map(c => variant.proteinChange.exists(_.code.value.toLowerCase contains c.code.value.toLowerCase)).getOrElse(true),
+                            cDNAChange.map(c => variant.cDNAChange.exists(_.value.toLowerCase contains c.value.toLowerCase)).getOrElse(true),
+                            gDNAChange.map(c => variant.gDNAChange.exists(_.value.toLowerCase contains c.value.toLowerCase)).getOrElse(true),                          
+                            proteinChange.map(c => variant.proteinChange.exists(_.value.toLowerCase contains c.value.toLowerCase)).getOrElse(true),
                           )(
                             strict = true
                           )

@@ -49,15 +49,16 @@ extends RDResultSet
 
     implicit def diagnosisFilterPredicate(f: DiagnosisFilter): RDDiagnosis => Boolean =
       diag =>
-        f.category match {
-           case Some(orphas) if orphas.nonEmpty => diag.categories exists (c => orphas exists (_.code == c.code))
+        f.codes match {
+           case Some(cs) if cs.nonEmpty => diag.codes exists (c => cs exists (_.code == c.code))
            case _ => true
         }
 
     record =>
       filter.patient(record.patient) &&
       record.hpoTerms.exists(filter.hpo) &&
-      filter.diagnosis(record.diagnosis)
+      record.diagnoses.exists(filter.diagnosis)
+//      filter.diagnosis(record.diagnoses)
 
   }
 
@@ -77,7 +78,7 @@ extends RDResultSet
       ),
       DiagnosisFilter(
         Option(
-          records.flatMap(_.diagnosis.categories.toList)
+          records.flatMap(_.diagnoses.flatMap(_.codes).toList)
             .toSet
         )
       )
@@ -96,7 +97,7 @@ extends RDResultSet
       Diagnostics.Distributions(
         Distribution.of(
           records.flatMap(
-            _.diagnosis.categories.toList
+            _.diagnoses.flatMap(_.codes).toList
           )
         ),
         Distribution.of(

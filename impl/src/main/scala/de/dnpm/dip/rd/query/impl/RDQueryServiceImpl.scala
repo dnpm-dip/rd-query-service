@@ -32,7 +32,7 @@ import de.dnpm.dip.coding.hgnc.HGNC
 import de.dnpm.dip.coding.icd.ICD10GM
 import de.dnpm.dip.rd.model.{
   HPO,
-  OMIM,
+  AlphaIDSE,
   Orphanet,
   RDPatientRecord
 }
@@ -124,8 +124,8 @@ with Completers
       .get
 
 
-  override implicit val omim: CodeSystemProvider[OMIM,Id,Applicative[Id]] =
-    OMIM.Catalog
+  override implicit val alphaIdSE: CodeSystemProvider[AlphaIDSE,Id,Applicative[Id]] =
+    AlphaIDSE.Catalogs
       .getInstance[cats.Id]
       .get
 

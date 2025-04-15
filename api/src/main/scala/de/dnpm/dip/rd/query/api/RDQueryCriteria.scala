@@ -1,7 +1,10 @@
 package de.dnpm.dip.rd.query.api
 
 
-import de.dnpm.dip.coding.Coding
+import de.dnpm.dip.coding.{
+  Code,
+  Coding
+}
 import de.dnpm.dip.coding.hgnc.HGNC
 import de.dnpm.dip.coding.hgvs.HGVS
 import de.dnpm.dip.rd.model.{
@@ -31,7 +34,7 @@ trait Criteria
 
 final case class RDQueryCriteria
 (
-  diagnoses: Option[Set[Coding[RDDiagnosis.Category]]],
+  diagnoses: Option[Set[Coding[RDDiagnosis.Systems]]],
   hpoTerms: Option[Set[Coding[HPO]]],
   variants: Option[Set[VariantCriteria]]
 )
@@ -41,7 +44,7 @@ final case class RDQueryCriteria
 final case class DiagnosisCriteria
 (
   operator: Option[Operator.Value],
-  categories: Set[Coding[RDDiagnosis.Category]],
+  codes: Set[Coding[RDDiagnosis.Systems]],
 )
 extends Criteria
 
@@ -56,9 +59,9 @@ extends Criteria
 final case class VariantCriteria
 (
   gene: Option[Coding[HGNC]],
-  cDNAChange: Option[Coding[HGVS.DNA]],
-  gDNAChange: Option[Coding[HGVS.DNA]],
-  proteinChange: Option[Coding[HGVS.Protein]]
+  cDNAChange: Option[Code[HGVS.DNA]],
+  gDNAChange: Option[Code[HGVS.DNA]],
+  proteinChange: Option[Code[HGVS.Protein]]
 )
 
 object RDQueryCriteria

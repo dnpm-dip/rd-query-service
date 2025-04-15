@@ -37,7 +37,7 @@ object RDResultSet
 
     final case class Distributions
     (
-      diseaseCategories: Distribution[Coding[RDDiagnosis.Category]],
+      diagnoses: Distribution[Coding[RDDiagnosis.Systems]],
       hpoTerms: Distribution[Coding[HPO]]
     )
 

@@ -25,7 +25,7 @@ final case class HPOFilter
 
 final case class DiagnosisFilter
 (
-  category: Option[Set[Coding[RDDiagnosis.Category]]]
+  codes: Option[Set[Coding[RDDiagnosis.Systems]]]
 )
 
 

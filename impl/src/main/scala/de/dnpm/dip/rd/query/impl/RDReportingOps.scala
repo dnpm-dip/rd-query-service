@@ -24,7 +24,7 @@ trait RDReportingOps
   ): Seq[Entry[String,Distributions]] = {
 
     records.foldLeft(
-      Map.empty[String,(Seq[Coding[HPO]],Seq[Coding[RDDiagnosis.Category]])]
+      Map.empty[String,(Seq[Coding[HPO]],Seq[Coding[RDDiagnosis.Systems]])]
     ){
       (acc,record) =>
 
@@ -41,20 +41,20 @@ trait RDReportingOps
           .map(_.value)
           .toList
 
-      val diseaseCategories =
-        record.diagnosis
-          .categories
-          .toList
+      val diagnosisCodes =
+        record.diagnoses
+         .flatMap(_.codes)
+         .toList
 
 
       variants.foldLeft(acc){
         case (accPr,variant) =>
           accPr.updatedWith(variant)(
             _.map {
-               case (hpos,orphas) => (hpos :++ hpoTerms, orphas :++ diseaseCategories)
+               case (hpos,codes) => (hpos :++ hpoTerms, codes :++ diagnosisCodes)
             }
             .orElse(
-              Some((hpoTerms,diseaseCategories))
+              Some((hpoTerms,diagnosisCodes))
             )
           )
       }

@@ -61,9 +61,9 @@ class Tests extends AsyncFlatSpec
       patRec <-
         Gen.oneOf(dataSets)
 
-      category =
-        patRec.diagnosis
-          .categories
+      code =
+        patRec.diagnoses
+          .flatMap(_.codes)
           .head
           .copy(display = None)  // Undefine display value to test whether Criteria completion works
 
@@ -93,7 +93,7 @@ class Tests extends AsyncFlatSpec
         )
       
     } yield RDQueryCriteria(
-      Some(Set(category)),
+      Some(Set(code)),
       Some(Set(hpoCoding)),
       Some(Set(variantCriteria))
     )

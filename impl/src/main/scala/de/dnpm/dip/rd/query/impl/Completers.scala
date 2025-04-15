@@ -17,8 +17,8 @@ import de.dnpm.dip.coding.hgnc.HGNC
 import de.dnpm.dip.coding.hgvs.HGVS
 import de.dnpm.dip.coding.icd.ICD10GM
 import de.dnpm.dip.rd.model.{
+  AlphaIDSE,
   HPO,
-  OMIM,
   Orphanet,
   RDDiagnosis,
 }
@@ -40,45 +40,34 @@ trait Completers extends BaseCompleters
 
   implicit val ordo: CodeSystemProvider[Orphanet,Id,Applicative[Id]]
 
-  implicit val omim: CodeSystemProvider[OMIM,Id,Applicative[Id]]
+  implicit val alphaIdSE: CodeSystemProvider[AlphaIDSE,Id,Applicative[Id]]
 
   implicit val icd10gm: CodeSystemProvider[ICD10GM,Id,Applicative[Id]]
 
 
   implicit val variantCriteriaCompleter: Completer[VariantCriteria] = {
 
-    val proteinChangeCompleter: Completer[Coding[HGVS.Protein]] =
-      Completer.of {
-        coding =>
-          val threeLetterCode = HGVS.Protein.to3LetterCode(coding.code.value)
-          coding.copy(
-            code = Code[HGVS.Protein](threeLetterCode),
-            display = coding.display.orElse(Some(threeLetterCode))
-          )
-      }
-
-    Completer.of(vc =>
-      vc.copy(
-        gene          = vc.gene.complete,
-        proteinChange = vc.proteinChange.map(proteinChangeCompleter)
+    val proteinChangeCompleter: Completer[Code[HGVS.Protein]] =
+      code => code.copy(
+        value = HGVS.Protein.to3LetterCode(code.value)
       )
-    )
 
+    vc => vc.copy(
+      gene          = vc.gene.complete,
+      proteinChange = vc.proteinChange.map(proteinChangeCompleter)
+    )
+    
   }
 
 
-  implicit val criteriaCompleter: Completer[RDQueryCriteria] = {
-
-    Completer.of(
-      criteria =>
-        criteria.copy(
-          diagnoses = criteria.diagnoses.complete,
-          hpoTerms  = criteria.hpoTerms.complete,
-          variants  = criteria.variants.complete
-        )
+  implicit val criteriaCompleter: Completer[RDQueryCriteria] = 
+    criteria => criteria.copy(
+      diagnoses = criteria.diagnoses.complete,
+      hpoTerms  = criteria.hpoTerms.complete,
+      variants  = criteria.variants.complete
     )
+    
 
-  }
 
 
 /*
@@ -160,15 +149,15 @@ trait Completers extends BaseCompleters
   }
 */
 
-  // Custom "expansion" of Coding[RDDiagnosis.Category] required because of the
+  // Custom "expansion" of Coding[RDDiagnosis.Systems] required because of the
   // synonymous relationships among Orphanet and ICD-10:
   // An Orphanet concept can contain (multiple) references to equivalent ICD-10 concepts.
   // Thus, for a given Orphanet or ICD-10 coding selected as query criterion,
   // the corresponding ICD-10 or Orphanet concepts should be included automatically as query criteria
   @deprecated("-","")
   private def expandEquivalentCodings(
-    coding: Coding[RDDiagnosis.Category]
-  ): Set[Coding[RDDiagnosis.Category]] = {
+    coding: Coding[RDDiagnosis.Systems]
+  ): Set[Coding[RDDiagnosis.Systems]] = {
 
     import Orphanet.extensions._ 
 
@@ -194,7 +183,7 @@ trait Completers extends BaseCompleters
             .flatMap(_.icd10Codes)
             .flatMap(expandDescendantCodings(_))
         )
-        .map(_.asInstanceOf[Coding[RDDiagnosis.Category]])  
+        .map(_.asInstanceOf[Coding[RDDiagnosis.Systems]])  
 
       // Case "ICD-10": Include descendant codings and also synonymous Orphanet codings
       case sys if sys == Coding.System[ICD10GM].uri =>
@@ -206,13 +195,13 @@ trait Completers extends BaseCompleters
         (
           icd10codings ++ icd10codings.flatMap(c => OrdoByIcd10Index.get(c.code))
         )
-        .map(_.asInstanceOf[Coding[RDDiagnosis.Category]])    
+        .map(_.asInstanceOf[Coding[RDDiagnosis.Systems]])    
 
       case _ =>
         Set(
-          coding.asInstanceOf[Coding[OMIM]]
+          coding.asInstanceOf[Coding[AlphaIDSE]]
             .complete
-            .asInstanceOf[Coding[RDDiagnosis.Category]]  
+            .asInstanceOf[Coding[RDDiagnosis.Systems]]  
         )
     }
 
@@ -222,7 +211,7 @@ trait Completers extends BaseCompleters
   @deprecated("-","")
   val CriteriaExpander: Completer[RDQueryCriteria] = {
 
-    implicit val diseaseCategoryExpander: Completer[Set[Coding[RDDiagnosis.Category]]] =
+    implicit val diseaseSystemsExpander: Completer[Set[Coding[RDDiagnosis.Systems]]] =
       Completer.of(_ flatMap expandEquivalentCodings)
 
 
