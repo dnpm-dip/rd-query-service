@@ -3,7 +3,7 @@ package de.dnpm.dip.rd.query.impl
 
 import de.dnpm.dip.util.DisplayLabel
 import de.dnpm.dip.coding.Coding
-import de.dnpm.dip.service.query.{
+import de.dnpm.dip.service.{
   Distribution,
   Entry
 }

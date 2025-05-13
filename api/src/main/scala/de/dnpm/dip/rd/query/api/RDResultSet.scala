@@ -3,11 +3,11 @@ package de.dnpm.dip.rd.query.api
 
 
 import de.dnpm.dip.coding.Coding
-import de.dnpm.dip.service.query.{
-  ResultSet,
+import de.dnpm.dip.service.{
   Entry,
   Distribution
 }
+import de.dnpm.dip.service.query.ResultSet
 import de.dnpm.dip.rd.model.{
   HPO,
   RDDiagnosis,

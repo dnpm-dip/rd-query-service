@@ -61,14 +61,24 @@ object RDQueryServiceImpl extends Logging
   private lazy val connector =
     System.getProperty(HttpConnector.Type.property,"broker") match {
       case HttpConnector.Type(t) =>
+        val baseURI = "/api/rd/peer2peer"
         HttpConnector(
           t,
           {
             case _: PeerToPeerQuery[_,_] =>
-              (POST, "/api/rd/peer2peer/query", Map.empty)
+              (POST, s"$baseURI/query", Map.empty)
 
-            case _: PatientRecordRequest[_] =>
-              (GET, "/api/rd/peer2peer/patient-record", Map.empty)
+            case req: PatientRecordRequest[_] =>
+              val params =
+                Map(
+                  "querier" -> Seq(req.querier.value),
+                  "patient" -> Seq(req.patient.value)
+                ) ++ req.snapshot.map(
+                  snp => "snapshot" -> Seq(snp.toString)
+                )
+
+              (GET, s"$baseURI/patient-record", params)
+//              (POST, s"$baseURI/patient-record", Map.empty)
           }
 
         )

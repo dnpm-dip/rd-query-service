@@ -1,10 +1,10 @@
 package de.dnpm.dip.rd.query.impl
 
 
+import de.dnpm.dip.service.Distribution
 import de.dnpm.dip.service.query.{
   PatientFilter,
-  Query,
-  Distribution
+  Query
 }
 import de.dnpm.dip.rd.model.{
   HPOTerm,
