@@ -8,7 +8,7 @@ ThisBuild / organization := "de.dnpm.dip"
 ThisBuild / scalaVersion := "2.13.16"
 ThisBuild / version      := envOrElse("VERSION","1.0.0")
 
-val ownerRepo  = envOrElse("REPOSITORY","dnpm-dip/mtb-model").split("/")
+val ownerRepo  = envOrElse("REPOSITORY","dnpm-dip/rd-query-service").split("/")
 ThisBuild / githubOwner      := ownerRepo(0)
 ThisBuild / githubRepository := ownerRepo(1)
 
