@@ -91,7 +91,6 @@ lazy val dependencies =
 
 lazy val settings = commonSettings
 
-
 // Compiler options from: https://alexn.org/blog/2020/05/26/scala-fatal-warnings/
 lazy val compilerOptions = Seq(
   // Feature options
