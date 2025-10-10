@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0](https://github.com/dnpm-dip/rd-query-service/compare/v1.0.1...v1.1.0) (2025-10-10)
+
+
+### Features
+
+* Upgraded dependency versions ([ba16010](https://github.com/dnpm-dip/rd-query-service/commit/ba16010c78b7199780c28b53d5ea03ac6163ff2c))
+
 ## [1.0.1](https://github.com/dnpm-dip/rd-query-service/compare/v1.0.0...v1.0.1) (2025-08-19)
 
 
