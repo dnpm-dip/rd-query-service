@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.2](https://github.com/dnpm-dip/rd-query-service/compare/v1.1.1...v1.1.2) (2025-11-20)
+
+
+### Bug Fixes
+
+* bump service-base to 1.1.2, connector-base to 1.1.1, rd-dto-* 1.1.2, hgnc-gene-set-impl to 1.1.1, rd-codesystems to 1.1.2, icd10 to 1.1.2 ([f1734e4](https://github.com/dnpm-dip/rd-query-service/commit/f1734e40762ecbee7102af4e2ea55febfeacb6fe))
+
 ## [1.1.1](https://github.com/dnpm-dip/rd-query-service/compare/v1.1.0...v1.1.1) (2025-10-13)
 
 
