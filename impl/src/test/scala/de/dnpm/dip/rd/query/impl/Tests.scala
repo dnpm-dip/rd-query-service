@@ -30,7 +30,7 @@ class Tests extends AsyncFlatSpec
   import de.dnpm.dip.util.Completer.syntax._
 
 
-  System.setProperty(Site.property,"UKx:Musterlingen")
+  System.setProperty(Site.PROP,"UKx:Musterlingen")
   System.setProperty(HttpConnector.Type.property,"fake")
   System.setProperty(RDLocalDB.dataGenProp,"0")
 

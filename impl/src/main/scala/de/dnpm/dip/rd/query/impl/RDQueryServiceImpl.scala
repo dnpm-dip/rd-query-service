@@ -20,7 +20,7 @@ import de.dnpm.dip.service.query.{
   Query,
   QueryCache,
   BaseQueryCache,
-  PeerToPeerQuery,
+  FederatedQuery,
   PatientRecordRequest,
   PreparedQueryDB
 }
@@ -58,6 +58,12 @@ object RDQueryServiceImpl extends Logging
   private val cache =
     new BaseQueryCache[RDQueryCriteria,RDResultSet,RDPatientRecord]
 
+  private val federatedQueriesActive =
+    sys.env.get("ACTIVE_FEDERATED_QUERY_USE_CASES")
+      .map(_.split(",").map(_.trim.toUpperCase).toSet)
+      .exists(_ contains "RD")
+
+
   private lazy val connector =
     System.getProperty(HttpConnector.Type.property,"broker") match {
       case HttpConnector.Type(t) =>
@@ -65,7 +71,7 @@ object RDQueryServiceImpl extends Logging
         HttpConnector(
           t,
           {
-            case _: PeerToPeerQuery[_,_] =>
+            case _: FederatedQuery[_,_] =>
               (POST, s"$baseURI/query", Map.empty)
 
             case req: PatientRecordRequest[_] =>
@@ -78,7 +84,6 @@ object RDQueryServiceImpl extends Logging
                 )
 
               (GET, s"$baseURI/patient-record", params)
-//              (POST, s"$baseURI/patient-record", Map.empty)
           }
 
         )
@@ -95,7 +100,8 @@ object RDQueryServiceImpl extends Logging
       RDPreparedQueryDB.instance,
       RDLocalDB.instance,
       connector,
-      cache
+      cache,
+      federatedQueriesActive
     )
 
 }
@@ -106,7 +112,8 @@ class RDQueryServiceImpl
   val preparedQueryDB: PreparedQueryDB[Future,Monad[Future],RDQueryCriteria,String],
   val db: LocalDB[Future,Monad[Future],RDQueryCriteria,RDPatientRecord],
   val connector: Connector[Future,Monad[Future]],
-  val cache: QueryCache[RDQueryCriteria,RDResultSet,RDPatientRecord]
+  val cache: QueryCache[RDQueryCriteria,RDResultSet,RDPatientRecord],
+  val federatedQueriesActive: Boolean
 )
 extends BaseQueryService[Future,RDConfig]
 with RDQueryService
