@@ -7,8 +7,13 @@ import cats.{
   Id,
   Monad
 }
+import cats.data.EitherNel
+import cats.syntax.either._
 import de.dnpm.dip.util.Logging
-import de.dnpm.dip.service.Connector
+import de.dnpm.dip.service.{
+  Cache,
+  Connector
+}
 import de.dnpm.dip.connector.{
   FakeConnector,
   HttpConnector,
@@ -18,8 +23,6 @@ import de.dnpm.dip.service.query.{
   BaseQueryService,
   LocalDB,
   Query,
-  QueryCache,
-  BaseQueryCache,
   FederatedQuery,
   PatientRecordRequest,
   PreparedQueryDB
@@ -55,8 +58,6 @@ object RDQueryServiceImpl extends Logging
 
   import HttpMethod._
 
-  private val cache =
-    new BaseQueryCache[RDQueryCriteria,RDResultSet,RDPatientRecord]
 
   private val federatedQueriesActive =
     sys.env.get("ACTIVE_FEDERATED_QUERY_USE_CASES")
@@ -100,7 +101,6 @@ object RDQueryServiceImpl extends Logging
       RDPreparedQueryDB.instance,
       RDLocalDB.instance,
       connector,
-      cache,
       federatedQueriesActive
     )
 
@@ -112,7 +112,6 @@ class RDQueryServiceImpl
   val preparedQueryDB: PreparedQueryDB[Future,Monad[Future],RDQueryCriteria,String],
   val db: LocalDB[Future,Monad[Future],RDQueryCriteria,RDPatientRecord],
   val connector: Connector[Future,Monad[Future]],
-  val cache: QueryCache[RDQueryCriteria,RDResultSet,RDPatientRecord],
   val federatedQueriesActive: Boolean
 )
 extends BaseQueryService[Future,RDConfig]
@@ -120,12 +119,18 @@ with RDQueryService
 with Completers
 {
 
+  override val querySessions = Cache.empty()
 
   override def ResultSetFrom(
     query: Query[RDQueryCriteria],
     results: Seq[Query.Match[RDPatientRecord,RDQueryCriteria]]
   ): RDResultSet =
     new RDResultSetImpl(query.id,results)
+
+
+  override def validate(criteria: RDQueryCriteria): EitherNel[String,RDQueryCriteria] = 
+    //TODO: Adapt to check that criteria be non-empty after having announced this as a breaking change
+    criteria.asRight
 
 
   override implicit val hpOntology: CodeSystem[HPO] =
