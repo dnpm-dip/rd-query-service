@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.6](https://github.com/dnpm-dip/rd-query-service/compare/v1.1.5...v1.1.6) (2026-08-12)
+
+
+### Bug Fixes
+
+* Bump connector-base to 1.2.1 ([e524805](https://github.com/dnpm-dip/rd-query-service/commit/e524805c18a5b8971fdf93a110fb01132de0d020))
+* Bump dependencies: service-base to 1.5.0 and codesystems for tests ([#9](https://github.com/dnpm-dip/rd-query-service/issues/9)) ([c8268e2](https://github.com/dnpm-dip/rd-query-service/commit/c8268e22635b38eb69254fef03e93e63976ff8b4))
+
 ## [1.1.5](https://github.com/dnpm-dip/rd-query-service/compare/v1.1.4...v1.1.5) (2026-06-01)
 
 
