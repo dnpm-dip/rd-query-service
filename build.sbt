@@ -70,18 +70,18 @@ lazy val impl = project
 lazy val dependencies =
   new {
     val scalatest      = "org.scalatest"  %% "scalatest"              % "3.2.20" % Test
-    val service_base   = "de.dnpm.dip"    %% "service-base"           % "1.5.0"
-    val connector_base = "de.dnpm.dip"    %% "connector-base"         % "1.2.1"
-    val rd_model       = "de.dnpm.dip"    %% "rd-dto-model"           % "1.2.1"
-    val rd_generators  = "de.dnpm.dip"    %% "rd-dto-generators"      % "1.2.1"
-    val hgnc           = "de.dnpm.dip"    %% "hgnc-gene-set-impl"     % "1.1.3" % Test
-    val hpo            = "de.dnpm.dip"    %% "hp-ontology"            % "1.2.1" % Test
-    val alpha_id_se    = "de.dnpm.dip"    %% "alpha-id-se"            % "1.2.1" % Test
-    val orphanet       = "de.dnpm.dip"    %% "orphanet-ordo"          % "1.2.1" % Test
-    val icd10gm        = "de.dnpm.dip"    %% "icd10gm-impl"           % "1.1.4" % Test
-    val icd_catalogs   = "de.dnpm.dip"    %% "icd-claml-packaged"     % "1.1.4" % Test
-    val atc_impl       = "de.dnpm.dip"    %% "atc-impl"               % "1.1.2" % Test
-    val atc_catalogs   = "de.dnpm.dip"    %% "atc-catalogs-packaged"  % "1.1.2" % Test
+    val service_base   = "de.dnpm.dip"    %% "service-base"           % "1.5.4"
+    val connector_base = "de.dnpm.dip"    %% "connector-base"         % "1.2.2"
+    val rd_model       = "de.dnpm.dip"    %% "rd-dto-model"           % "1.2.2"
+    val rd_generators  = "de.dnpm.dip"    %% "rd-dto-generators"      % "1.2.2"
+    val hgnc           = "de.dnpm.dip"    %% "hgnc-gene-set-impl"     % "1.1.4" % Test
+    val hpo            = "de.dnpm.dip"    %% "hp-ontology"            % "1.2.2" % Test
+    val alpha_id_se    = "de.dnpm.dip"    %% "alpha-id-se"            % "1.2.2" % Test
+    val orphanet       = "de.dnpm.dip"    %% "orphanet-ordo"          % "1.2.2" % Test
+    val icd10gm        = "de.dnpm.dip"    %% "icd10gm-impl"           % "1.1.5" % Test
+    val icd_catalogs   = "de.dnpm.dip"    %% "icd-claml-packaged"     % "1.1.5" % Test
+    val atc_impl       = "de.dnpm.dip"    %% "atc-impl"               % "1.1.4" % Test
+    val atc_catalogs   = "de.dnpm.dip"    %% "atc-catalogs-packaged"  % "1.1.4" % Test
   }
 
 
