@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.9](https://github.com/dnpm-dip/rd-query-service/compare/v1.1.8...v1.1.9) (2026-11-24)
+
+
+### Bug Fixes
+
+* Bump service-base to 1.5.7 ([fde8291](https://github.com/dnpm-dip/rd-query-service/commit/fde8291d4b96e004b7a1aec562850351c2a5c8a9))
+
 ## [1.1.8](https://github.com/dnpm-dip/rd-query-service/compare/v1.1.7...v1.1.8) (2026-11-06)
 
 
